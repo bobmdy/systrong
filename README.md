@@ -62,10 +62,11 @@ Acesse `http://localhost:8080` no seu navegador.
 1. Crie um novo repositório no seu GitHub chamado `systrong`.
 2. No terminal desta pasta, execute:
    ```bash
-   git remote add origin https://github.com/SEU-USUARIO/systrong.git
+   git remote add origin https://github.com/bobmdy/systrong.git
    git push -u origin main
    ```
-3. No GitHub, vá em **Settings** > **Pages** e selecione a branch `main`. Seu site estará no ar em segundos!
+3. No GitHub, vá em **Settings** > **Pages** e selecione a branch `main`. Seu site estará no ar em segundos em:
+   👉 **`https://bobmdy.github.io/systrong/`**
 
 ### Opção 2: Vercel / Netlify
 1. Faça login na [Vercel](https://vercel.com) ou [Netlify](https://netlify.com).
