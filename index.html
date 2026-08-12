@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SYSTRONG — TST Program</title>
+  
+  <!-- Fonts Google (Orbitron, Rajdhani, Outfit & Plus Jakarta Sans) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@500;600;700&family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Canvas Neural Cyberpunk de Fundo -->
+  <canvas id="cyber-canvas"></canvas>
+
+  <!-- Tela de Login com a Logo Oficial -->
+  <div class="tela-login" id="tela-login">
+    <div class="login-card">
+      <img src="assets/images/logo.png" alt="SYSTRONG Logo" class="logo-img">
+      <p style="margin-top: 4px;">TST PROGRAM</p>
+      
+      <form id="form-login" style="display:flex; flex-direction:column; gap:12px; margin-top:12px;">
+        <div class="campo" style="text-align:left;">
+          <label>Usuário / E-mail</label>
+          <input type="text" id="login-usuario" placeholder="admin" value="admin" required>
+        </div>
+        
+        <div class="campo" style="text-align:left;">
+          <label>Senha</label>
+          <input type="password" id="login-senha" placeholder="••••••••" value="123456" required>
+        </div>
+
+        <div id="erro-login" class="erro-login" style="display:none;">
+          Usuário ou senha incorretos.
+        </div>
+
+        <button type="submit">ENTRAR NO SYSTRONG</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dashboard da Aplicação Principal -->
+  <div class="app" id="app-dashboard" style="display:none;">
+    <!-- Topbar / Header com Logo Oficial -->
+    <header class="topbar">
+      <div class="nav-botoes">
+        <button id="btn-tema" title="Alternar Tema Dark/Light">🌙</button>
+      </div>
+
+      <div class="logo">
+        <img src="assets/images/logo.png" alt="SYSTRONG Logo" class="logo-img">
+        <p>TST PROGRAM</p>
+      </div>
+
+      <div class="topbar-direita">
+        <button class="btn-modo-visao" id="btn-modo-visao" title="Alternar Visão Computador / Celular">💻 PC</button>
+        <button class="btn-icon" onclick="window.print()" title="Imprimir Relatório">🖨️</button>
+        <button class="btn-sair" id="btn-logout" title="Sair do Sistema">🚪 Sair</button>
+      </div>
+    </header>
+
+    <!-- Grid de Painéis Principais -->
+    <section class="cards">
+      <!-- Painel 1: Lista de Alunos / Pacientes (Aba Mobile: pacientes) -->
+      <div class="painel painel-aba-mobile aba-ativa" data-aba="pacientes">
+        <div class="painel-cabecalho">
+          <h2>👥 Alunos / Pacientes</h2>
+          <button class="btn-mini" id="btn-novo-aluno" title="Cadastrar Novo Paciente" style="background:var(--acento); color:#ffffff; border:none; font-weight:800;">👤+ Novo Paciente</button>
+        </div>
+        <h3>Selecione para Acessar Ficha</h3>
+        <ul class="lista-alunos" id="lista-alunos">
+          <!-- Renderizado via JavaScript -->
+        </ul>
+      </div>
+
+      <!-- Painel 2 & 3: Ficha do Paciente (Ocupa 2 Colunas no Desktop) (Aba Mobile: ficha) -->
+      <div class="painel painel-aba-mobile" style="grid-column: span 2;" data-aba="ficha" id="painel-ficha">
+        <!-- Renderizado via JavaScript -->
+      </div>
+    </section>
+
+    <!-- Seção de Ferramentas Auxiliares (Aba Mobile: tools) -->
+    <section class="cards painel-aba-mobile" data-aba="tools" style="margin-top: 24px;">
+      <!-- Calculadora IMC -->
+      <div class="painel">
+        <h2>🧮 Calculadora de IMC</h2>
+        <div class="form-registro" style="margin-top: 14px;">
+          <div class="campo">
+            <label>Peso (kg)</label>
+            <input type="number" id="calc-peso" placeholder="Ex: 75.5" step="0.1">
+          </div>
+          <div class="campo">
+            <label>Altura (cm)</label>
+            <input type="number" id="calc-altura" placeholder="Ex: 175">
+          </div>
+          <button type="button" id="btn-calc-imc" class="btn-cyber" style="margin-top: 10px; width: 100%;">Calcular IMC</button>
+        </div>
+        <div id="resultado-imc"></div>
+      </div>
+
+      <!-- Calculadora TMB / TDEE -->
+      <div class="painel">
+        <h2>🔥 Gasto Calórico (TMB/TDEE)</h2>
+        <div class="form-registro" style="margin-top: 14px;">
+          <div style="display:flex; gap:10px;">
+            <div class="campo" style="flex:1;">
+              <label>Peso (kg)</label>
+              <input type="number" id="tmb-peso" placeholder="70">
+            </div>
+            <div class="campo" style="flex:1;">
+              <label>Altura (cm)</label>
+              <input type="number" id="tmb-altura" placeholder="170">
+            </div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <div class="campo" style="flex:1;">
+              <label>Idade</label>
+              <input type="number" id="tmb-idade" placeholder="30">
+            </div>
+            <div class="campo" style="flex:1;">
+              <label>Sexo</label>
+              <select id="tmb-sexo">
+                <option value="M">Masculino</option>
+                <option value="F">Feminino</option>
+              </select>
+            </div>
+          </div>
+          <button type="button" id="btn-calc-tmb" class="btn-cyber" style="margin-top: 10px; width: 100%;">Calcular Gasto Calórico</button>
+        </div>
+        <div id="resultado-tmb"></div>
+      </div>
+
+      <!-- Pesquisa PubMed -->
+      <div class="painel">
+        <h2>📚 Literatura Científica (PubMed)</h2>
+        <p style="font-size:0.8rem; color:var(--texto-suave); margin-bottom:12px;">Busque evidências científicas diretamente na base NCBI PubMed.</p>
+        <div class="form-registro">
+          <div class="campo">
+            <input type="text" id="input-pubmed" placeholder="Ex: Rotator cuff exercise, Hypertension workout...">
+          </div>
+          <button type="button" id="btn-buscar-pubmed" class="btn-cyber" style="margin-top: 10px; width: 100%;">🔍 Buscar Artigos</button>
+        </div>
+        <div id="resultado-pubmed" style="margin-top:12px;"></div>
+      </div>
+    </section>
+
+    <!-- Relatório Oculto / Renderizado para Impressão -->
+    <div id="painel-relatorio" class="no-print" style="margin-top: 32px;"></div>
+
+    <footer class="rodape">
+      SYSTRONG © 2026 — TST Program. Todos os direitos reservados.
+    </footer>
+  </div>
+
+  <!-- Barra de Navegação Inferior Fixa para Dispositivos Móveis (Mobile Bottom Nav) -->
+  <nav class="mobile-bottom-nav">
+    <button class="mobile-nav-item ativo" data-aba="pacientes" onclick="alternarAbaMobile('pacientes')">
+      <span class="icon">👥</span>
+      <span>Pacientes</span>
+    </button>
+    <button class="mobile-nav-item" data-aba="ficha" onclick="alternarAbaMobile('ficha')">
+      <span class="icon">📋</span>
+      <span>Ficha</span>
+    </button>
+    <button class="mobile-nav-item" onclick="abrirModal('modal-aluno')" style="color:var(--acento);">
+      <span class="icon">👤+</span>
+      <span>Novo</span>
+    </button>
+    <button class="mobile-nav-item" data-aba="tools" onclick="alternarAbaMobile('tools')">
+      <span class="icon">🧮</span>
+      <span>Ferramentas</span>
+    </button>
+  </nav>
+
+  <!-- Modal 1: Cadastrar Novo Aluno / Paciente -->
+  <div class="modal-fundo" id="modal-aluno">
+    <div class="modal">
+      <header>
+        <h2>Cadastrar Novo Aluno / Paciente</h2>
+        <button class="btn-fechar" id="btn-fechar-aluno">&times;</button>
+      </header>
+      <form id="form-aluno" class="form-aluno">
+        <div class="campo">
+          <label>Nome Completo</label>
+          <input type="text" id="nome-aluno" placeholder="Ex: Lucas Gabriel" required>
+        </div>
+
+        <div class="campo">
+          <label>Idade</label>
+          <input type="number" id="idade-aluno" placeholder="Ex: 34" min="10" max="100">
+        </div>
+
+        <div class="campo">
+          <label>Objetivo Principal</label>
+          <div class="objetivo-botoes">
+            <button type="button" class="obj obj-reab" data-obj="REAB">
+              REAB
+              <small>Reabilitação</small>
+            </button>
+            <button type="button" class="obj obj-fort ativo" data-obj="FORT">
+              FORT
+              <small>Fortalecimento</small>
+            </button>
+            <button type="button" class="obj obj-obes" data-obj="OBES">
+              OBES
+              <small>Obesidade / Perda</small>
+            </button>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label>Dias de Treino na Semana</label>
+          <div class="dias-semana">
+            <span class="dia ativo">Seg</span>
+            <span class="dia">Ter</span>
+            <span class="dia ativo">Qua</span>
+            <span class="dia">Qui</span>
+            <span class="dia ativo">Sex</span>
+            <span class="dia">Sab</span>
+            <span class="dia">Dom</span>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label>Condição de Saúde / Observações Iniciais</label>
+          <textarea id="condicao-aluno" rows="3" placeholder="Restrições articulares, hipertensão, histórico de cirurgias..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-salvar" style="margin-top: 12px; background:var(--acento); color:#ffffff;">Salvar Aluno</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 2: Criar Programa de Treino -->
+  <div class="modal-fundo" id="modal-programa">
+    <div class="modal modal-largo">
+      <header>
+        <h2>Prescrever Novo Programa de Treino</h2>
+        <button class="btn-fechar" id="btn-fechar-programa">&times;</button>
+      </header>
+      <form id="form-programa" class="form-aluno">
+        <div id="form-programa-conteudo"></div>
+        <button type="submit" class="btn-salvar" style="margin-top: 16px; background:var(--acento); color:#ffffff;">Salvar Programa</button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- Drawer / Chat Modal do NVIDIA Nemotron AI -->
+  <div class="nemotron-drawer" id="nemotron-drawer">
+    <div class="nemotron-drawer-header">
+      <h3>⚡ NVIDIA Nemotron v3.1 Core</h3>
+      <button class="btn-fechar" id="btn-fechar-nemotron" style="background:none; border:none; color:var(--texto-suave); font-size:1.4rem; cursor:pointer;">&times;</button>
+    </div>
+
+    <div class="nemotron-chat-body" id="nemotron-chat-body">
+      <div class="nemotron-msg ai">
+        <strong>⚡ Nemotron Core:</strong> Olá! Sou o assistente neural <strong>NVIDIA Nemotron</strong> especialista em biomecânica, medicina do esporte e prescrição de treinos.<br><br>Como posso ajudar na sua prescrição clínica hoje?
+      </div>
+    </div>
+
+    <div class="nemotron-prompt-chips">
+      <button class="chip-btn" onclick="enviarPromptRapidoNemotron('Prescrever Treino REAB')">🏥 Treino REAB</button>
+      <button class="chip-btn" onclick="enviarPromptRapidoNemotron('Prescrever Treino FORT')">💪 Treino FORT</button>
+      <button class="chip-btn" onclick="enviarPromptRapidoNemotron('Análise de Hipertensão')">🫀 Análise de PA</button>
+      <button class="chip-btn" onclick="enviarPromptRapidoNemotron('Evidências PubMed')">📚 PubMed Sci</button>
+    </div>
+
+    <div class="nemotron-chat-input">
+      <input type="text" id="input-nemotron" placeholder="Pergunte ao Nemotron AI..." onkeypress="tratarKeypressNemotron(event)">
+      <button type="button" id="btn-enviar-nemotron">Enviar</button>
+    </div>
+  </div>
+
+  <!-- JavaScript Core & Nemotron Modules -->
+  <script src="js/cyber-canvas.js"></script>
+  <script src="js/nemotron-core.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

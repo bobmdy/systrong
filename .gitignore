@@ -1,0 +1,16 @@
+# OS & System Junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node & Build artifacts (if added later)
+node_modules/
+dist/
+build/
+*.log

@@ -1,0 +1,1501 @@
+/* ==========================================================================
+   SYSTRONG - Sistema de Prescrição de Treinos & Acompanhamento de Pacientes
+   Identidade Visual Cyberpunk Glassmorphism 2.0 & NVIDIA Nemotron AI Core
+   ========================================================================== */
+
+:root {
+  --fundo: #07090e;
+  --painel: rgba(12, 17, 26, 0.82);
+  --painel-hover: rgba(18, 25, 38, 0.92);
+  --painel-borda: rgba(0, 243, 255, 0.22);
+  --texto: #f0f6fc;
+  --texto-suave: #8b9eb7;
+  --acento: #00f3ff;
+  --acento-escuro: #0099b8;
+  --cyber-magenta: #ff007f;
+  --cyber-green: #00ff88;
+  --cyber-violet: #9d4edd;
+  --perigo: #ff3366;
+  
+  --cor-reab: #00f3ff;
+  --cor-fort: #00ff88;
+  --cor-obes: #ff007f;
+
+  --sombra-card: 0 12px 40px 0 rgba(0, 243, 255, 0.12), 0 8px 32px 0 rgba(0, 0, 0, 0.85);
+  --sombra-glow: 0 0 20px rgba(0, 243, 255, 0.35);
+  --glass-bg: rgba(10, 15, 24, 0.85);
+  --glass-border: rgba(0, 243, 255, 0.25);
+  --font-cyber: 'Orbitron', 'Outfit', sans-serif;
+  --font-hud: 'Rajdhani', 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Light Theme Variables */
+[data-theme="light"] {
+  --fundo: #f0f5fa;
+  --painel: rgba(255, 255, 255, 0.9);
+  --painel-hover: rgba(245, 250, 255, 0.95);
+  --painel-borda: rgba(0, 153, 184, 0.3);
+  --texto: #0a111a;
+  --texto-suave: #4a5d73;
+  --acento: #007799;
+  --acento-escuro: #004d66;
+  --cyber-magenta: #d9006c;
+  --cyber-green: #00a859;
+  --cyber-violet: #7b2cbf;
+  --perigo: #d90036;
+
+  --cor-reab: #007799;
+  --cor-fort: #00a859;
+  --cor-obes: #d9006c;
+
+  --sombra-card: 0 8px 30px 0 rgba(0, 119, 153, 0.15);
+  --sombra-glow: 0 0 15px rgba(0, 119, 153, 0.25);
+  --glass-bg: rgba(255, 255, 255, 0.92);
+  --glass-border: rgba(0, 119, 153, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+#cyber-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', 'Rajdhani', system-ui, -apple-system, sans-serif;
+  background: var(--fundo);
+  color: var(--texto);
+  min-height: 100vh;
+  line-height: 1.5;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   TELA DE LOGIN
+   ========================================================================== */
+.tela-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: radial-gradient(circle at center, #121d28 0%, var(--fundo) 100%);
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 10000;
+  transition: opacity 0.3s ease;
+}
+
+.tela-login.oculto {
+  display: none !important;
+}
+
+.login-card {
+  background: var(--painel);
+  border: 1px solid var(--painel-borda);
+  border-radius: 24px;
+  padding: 36px 32px;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+  box-shadow: var(--sombra-card);
+  backdrop-filter: blur(16px);
+}
+
+/* Logo Oficial com contorno nítido no fundo escuro */
+.logo-img {
+  max-height: 90px;
+  width: auto;
+  display: block;
+  margin: 0 auto 4px;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.85)) drop-shadow(0 0 10px rgba(0, 180, 216, 0.4));
+  transition: transform 0.2s ease;
+}
+
+.login-card .logo-img {
+  max-height: 125px;
+  margin-bottom: 2px;
+}
+
+.login-card h1 {
+  margin: 0;
+  font-size: 2.2rem;
+  letter-spacing: 4px;
+  font-weight: 800;
+  font-family: 'Outfit', sans-serif;
+}
+
+.login-card h1 span {
+  color: var(--acento);
+}
+
+.login-card p {
+  margin: 0 0 10px;
+  color: var(--acento);
+  letter-spacing: 4px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.login-card button {
+  background: linear-gradient(135deg, var(--acento) 0%, var(--acento-escuro) 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.login-card button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 180, 216, 0.35);
+}
+
+.erro-login {
+  color: var(--perigo);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.btn-sair {
+  background: none;
+  border: 1px solid var(--painel-borda);
+  border-radius: 10px;
+  color: var(--texto-suave);
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-sair:hover {
+  border-color: var(--perigo);
+  color: var(--perigo);
+}
+
+/* Layout Principal */
+.app {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 20px 20px 48px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Topbar Header */
+.topbar {
+  position: relative;
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--painel-borda);
+}
+
+.topbar .logo {
+  cursor: pointer;
+  display: inline-block;
+}
+
+.nav-botoes {
+  position: absolute;
+  left: 0;
+  top: 4px;
+  display: flex;
+  gap: 10px;
+}
+
+.nav-botoes button, .btn-icon, .btn-modo-visao {
+  height: 40px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 12px;
+  border: 1px solid var(--painel-borda);
+  background: var(--painel);
+  color: var(--texto);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-botoes button:hover, .btn-icon:hover, .btn-modo-visao:hover {
+  border-color: var(--acento);
+  color: var(--acento);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 180, 216, 0.2);
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 2.3rem;
+  letter-spacing: 4px;
+  font-weight: 800;
+  font-family: 'Outfit', sans-serif;
+  display: inline-block;
+  padding: 0 16px 4px;
+  position: relative;
+}
+
+.topbar h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 3px;
+  background: var(--acento);
+  border-radius: 2px;
+  box-shadow: 0 0 10px var(--acento);
+}
+
+.topbar h1 span {
+  color: var(--acento);
+}
+
+.topbar p {
+  margin: 4px 0 0;
+  color: var(--acento);
+  letter-spacing: 5px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.topbar-direita {
+  position: absolute;
+  right: 0;
+  top: 4px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Cards e Painéis */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.painel {
+  background: var(--painel);
+  border: 1px solid var(--painel-borda);
+  border-radius: 18px;
+  padding: 22px;
+  min-height: 340px;
+  box-shadow: var(--sombra-card);
+  backdrop-filter: blur(12px);
+  transition: border-color 0.2s ease;
+}
+
+.painel:hover {
+  border-color: rgba(0, 180, 216, 0.3);
+}
+
+.painel-cabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.painel h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  letter-spacing: 0.5px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.painel h3 {
+  color: var(--texto-suave);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+/* Lista de Alunos */
+.lista-alunos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lista-alunos li {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--painel-borda);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.02);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.lista-alunos li:hover {
+  border-color: var(--acento);
+  background: rgba(0, 180, 216, 0.06);
+  transform: translateX(4px);
+}
+
+.lista-alunos li.ativo {
+  border-color: var(--acento);
+  background: rgba(0, 180, 216, 0.12);
+  box-shadow: inset 3px 0 0 var(--acento);
+}
+
+.aluno-item-cabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.aluno-nome {
+  font-weight: 700;
+  font-size: 0.98rem;
+}
+
+.lista-alunos small {
+  color: var(--texto-suave);
+  font-size: 0.8rem;
+}
+
+.vazio {
+  color: var(--texto-suave);
+  font-style: italic;
+  padding: 24px 0;
+  text-align: center;
+}
+
+/* Badges REAB, FORT, OBES */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.badge-reab {
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--cor-reab);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.badge-fort {
+  background: rgba(0, 180, 216, 0.15);
+  color: var(--cor-fort);
+  border: 1px solid rgba(0, 180, 216, 0.3);
+}
+
+.badge-obes {
+  background: rgba(249, 115, 22, 0.15);
+  color: var(--cor-obes);
+  border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+/* Formulários */
+.form-aluno, .form-registro {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+input, textarea, select {
+  background: var(--fundo);
+  border: 1px solid var(--painel-borda);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: var(--texto);
+  font: inherit;
+  resize: vertical;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--acento);
+  box-shadow: 0 0 0 3px rgba(0, 243, 255, 0.25), 0 0 12px rgba(0, 243, 255, 0.2);
+}
+
+/* Botões Cyberpunk Generalizados */
+.btn-cyber, .form-registro button {
+  background: linear-gradient(135deg, rgba(0, 243, 255, 0.15) 0%, rgba(0, 153, 184, 0.3) 100%);
+  border: 1px solid var(--acento);
+  color: var(--texto);
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-family: var(--font-hud);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 243, 255, 0.15);
+  backdrop-filter: blur(8px);
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn-cyber:hover, .form-registro button:hover {
+  background: linear-gradient(135deg, var(--acento) 0%, var(--acento-escuro) 100%);
+  color: #000000;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(0, 243, 255, 0.45);
+}
+
+.btn-cyber:active, .form-registro button:active {
+  transform: translateY(0);
+}
+
+.objetivo-botoes {
+  display: flex;
+  gap: 10px;
+}
+
+.obj {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--painel-borda);
+  background: var(--fundo);
+  color: var(--texto);
+  font-weight: 800;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.obj small {
+  font-weight: 500;
+  font-size: 0.68rem;
+  color: var(--texto-suave);
+}
+
+.obj-reab:hover, .obj-reab.ativo {
+  border-color: var(--cor-reab);
+  color: var(--cor-reab);
+}
+
+.obj-fort:hover, .obj-fort.ativo {
+  border-color: var(--cor-fort);
+  color: var(--cor-fort);
+}
+
+.obj-obes:hover, .obj-obes.ativo {
+  border-color: var(--cor-obes);
+  color: var(--cor-obes);
+}
+
+.obj.ativo {
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.dias-semana {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.dia {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--painel-borda);
+  background: var(--fundo);
+  color: var(--texto-suave);
+  font-size: 0.85rem;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.dia:hover {
+  border-color: var(--acento);
+  color: var(--texto);
+}
+
+.dia.ativo {
+  background: var(--acento);
+  border-color: var(--acento);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0, 180, 216, 0.3);
+}
+
+/* Modais */
+.modal-fundo {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.modal-fundo.ativo {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal {
+  background: var(--painel);
+  border: 1px solid var(--painel-borda);
+  border-radius: 20px;
+  padding: 24px 28px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  transform: translateY(15px);
+  transition: transform 0.25s ease;
+}
+
+.modal-fundo.ativo .modal {
+  transform: translateY(0);
+}
+
+.modal.modal-largo {
+  max-width: min(96vw, 1080px);
+}
+
+.modal header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--painel-borda);
+}
+
+.modal h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+}
+
+.btn-fechar {
+  background: none;
+  border: none;
+  color: var(--texto-suave);
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.15s ease;
+}
+
+.btn-fechar:hover {
+  color: var(--texto);
+}
+
+/* Ficha Detalhada do Aluno */
+.ficha {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ficha-cabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--painel-borda);
+}
+
+.ficha-info h2 {
+  font-size: 1.8rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.resumo-treino {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.resumo-treino span {
+  background: rgba(0, 180, 216, 0.08);
+  border: 1px solid var(--painel-borda);
+  border-radius: 10px;
+  padding: 6px 14px;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.condicao-saude {
+  background: rgba(255, 89, 100, 0.08);
+  border: 1px solid rgba(255, 89, 100, 0.3);
+  border-radius: 14px;
+  padding: 14px 18px;
+}
+
+.condicao-saude h3 {
+  color: var(--perigo);
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+}
+
+.condicao-saude p {
+  margin: 0;
+  white-space: pre-wrap;
+  font-size: 0.92rem;
+}
+
+/* Upload Específico do Paciente */
+.upload-zone-paciente {
+  text-align: center;
+  padding: 18px 20px;
+  border: 2px dashed var(--painel-borda);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upload-zone-paciente:hover {
+  border-color: var(--acento);
+  background: rgba(0, 180, 216, 0.05);
+}
+
+/* Seção de Treinos e Tabelas */
+.secao-treinos {
+  margin: 10px 0;
+}
+
+.secao-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.btn-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--painel-borda);
+  background: var(--painel);
+  color: var(--texto);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-mini:hover {
+  border-color: var(--acento);
+  color: var(--acento);
+}
+
+.btn-excluir-aluno:hover {
+  border-color: var(--perigo);
+  color: var(--perigo);
+}
+
+.programa {
+  margin-top: 14px;
+  border: 1px solid var(--painel-borda);
+  border-radius: 16px;
+  padding: 18px;
+  background: var(--fundo);
+}
+
+.programa.atual {
+  border-color: rgba(0, 180, 216, 0.4);
+  box-shadow: 0 0 15px rgba(0, 180, 216, 0.08);
+}
+
+.programa-cabecalho {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.programa-tempo {
+  color: var(--acento);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.programa-treinos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.treino-bloco {
+  min-width: 0;
+}
+
+.treino-bloco-titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.treino-nome {
+  font-weight: 800;
+  letter-spacing: 2px;
+  font-size: 1.1rem;
+  font-family: 'Outfit', sans-serif;
+}
+
+.treino-nivel {
+  background: rgba(0, 180, 216, 0.15);
+  color: var(--acento);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Tabela de Treinos com Carga */
+.treino-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.treino-tabela th, .treino-tabela td {
+  border: 1px solid var(--painel-borda);
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.treino-tabela thead th {
+  background: rgba(0, 180, 216, 0.1);
+  color: var(--texto-suave);
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.treino-tabela td:nth-child(2), .treino-tabela td:nth-child(3),
+.treino-tabela th:nth-child(2), .treino-tabela th:nth-child(3) {
+  width: 80px;
+  text-align: center;
+}
+
+.celula-carga {
+  padding: 0 !important;
+}
+
+.input-carga {
+  width: 100%;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  text-align: center;
+  padding: 10px 6px;
+  font-weight: 700;
+}
+
+.input-carga:focus {
+  outline: none;
+  background: rgba(0, 180, 216, 0.12);
+}
+
+/* Monitoramento de Pressão Arterial */
+.form-pressao {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.form-pressao input {
+  width: 100px;
+}
+
+.lista-pressao {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.lista-pressao li {
+  border: 1px solid var(--painel-borda);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--fundo);
+}
+
+.lista-pressao strong {
+  font-size: 1.1rem;
+}
+
+.lista-pressao small {
+  color: var(--texto-suave);
+  font-size: 0.72rem;
+}
+
+.pressao-normal strong { color: var(--acento); }
+.pressao-atencao strong { color: var(--cor-obes); }
+.pressao-alta { border-color: rgba(255, 89, 100, 0.5); }
+.pressao-alta strong { color: var(--perigo); }
+
+/* SVG Canvas do Gráfico de Pressão */
+.grafico-pressao-container {
+  background: var(--fundo);
+  border: 1px solid var(--painel-borda);
+  border-radius: 14px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.grafico-pressao svg {
+  width: 100%;
+  height: 220px;
+  display: block;
+}
+
+.grafico-legenda {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  font-size: 0.8rem;
+  color: var(--texto-suave);
+}
+
+.grafico-legenda i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+/* Artigos PubMed */
+.lista-pubmed {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lista-pubmed li {
+  border-left: 4px solid var(--acento);
+  background: var(--fundo);
+  border-radius: 0 10px 10px 0;
+  padding: 12px 14px;
+}
+
+.lista-pubmed a {
+  color: var(--acento);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.lista-pubmed a:hover {
+  text-decoration: underline;
+}
+
+/* Estilo do Relatório Prontuário para Impressão */
+.relatorio {
+  background: #ffffff;
+  color: #1c2228;
+  border-radius: 16px;
+  padding: 36px 40px;
+  max-width: 860px;
+  margin: 0 auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.relatorio header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2px solid #1c2228;
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+}
+
+.relatorio h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  letter-spacing: 2px;
+  font-family: 'Outfit', sans-serif;
+  color: #1c2228;
+}
+
+.relatorio h1 small {
+  font-size: 0.75rem;
+  letter-spacing: 4px;
+  color: #55606b;
+  display: block;
+}
+
+.relatorio-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 18px;
+  font-size: 0.88rem;
+}
+
+.relatorio-tabela th, .relatorio-tabela td {
+  border: 1px solid #d8dce0;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.relatorio-tabela th {
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.rodape {
+  margin-top: auto;
+  padding-top: 36px;
+  text-align: center;
+  color: var(--texto-suave);
+  font-size: 0.8rem;
+}
+
+/* Ocultar barra de navegação mobile no modo Desktop por padrão */
+.mobile-bottom-nav {
+  display: none;
+}
+
+/* ==========================================================================
+   MOBILE INTERFACE (Interface Dedicada para Celular)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  body:not(.modo-desktop-forcado) .app {
+    padding: 14px 12px 80px;
+  }
+
+  body:not(.modo-desktop-forcado) .topbar {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+  }
+
+  body:not(.modo-desktop-forcado) .topbar h1 {
+    font-size: 1.7rem;
+    letter-spacing: 2px;
+  }
+
+  body:not(.modo-desktop-forcado) .topbar p {
+    letter-spacing: 3px;
+    font-size: 0.68rem;
+  }
+
+  body:not(.modo-desktop-forcado) .cards {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+
+  body:not(.modo-desktop-forcado) .painel {
+    grid-column: span 1 !important;
+    padding: 16px;
+    border-radius: 16px;
+    min-height: auto;
+  }
+
+  body:not(.modo-desktop-forcado) .painel-aba-mobile {
+    display: none;
+  }
+
+  body:not(.modo-desktop-forcado) .painel-aba-mobile.aba-ativa {
+    display: block;
+    animation: fadeIn 0.25s ease-in-out;
+  }
+
+  body:not(.modo-desktop-forcado) .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--painel-borda);
+    z-index: 9999;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  body:not(.modo-desktop-forcado) .mobile-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: none;
+    border: none;
+    color: var(--texto-suave);
+    font-size: 0.72rem;
+    font-weight: 700;
+    height: 100%;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.15s ease;
+  }
+
+  body:not(.modo-desktop-forcado) .mobile-nav-item span.icon {
+    font-size: 1.3rem;
+  }
+
+  body:not(.modo-desktop-forcado) .mobile-nav-item.ativo {
+    color: var(--acento);
+  }
+
+  body:not(.modo-desktop-forcado) .mobile-nav-item.ativo span.icon {
+    transform: translateY(-2px);
+  }
+
+  body:not(.modo-desktop-forcado) .treino-tabela-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body:not(.modo-desktop-forcado) .ficha-info h2 {
+    font-size: 1.35rem;
+  }
+
+  body:not(.modo-desktop-forcado) .rodape {
+    padding-bottom: 20px;
+  }
+}
+
+/* Modo Mobile Forçado Manualmente */
+body.modo-mobile-forcado .app {
+  max-width: 480px;
+  padding: 14px 12px 80px;
+}
+
+body.modo-mobile-forcado .topbar h1 {
+  font-size: 1.7rem;
+  letter-spacing: 2px;
+}
+
+body.modo-mobile-forcado .cards {
+  grid-template-columns: 1fr !important;
+  gap: 16px;
+}
+
+body.modo-mobile-forcado .painel {
+  grid-column: span 1 !important;
+  padding: 16px;
+  border-radius: 16px;
+  min-height: auto;
+}
+
+body.modo-mobile-forcado .painel-aba-mobile {
+  display: none;
+}
+
+body.modo-mobile-forcado .painel-aba-mobile.aba-ativa {
+  display: block;
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+body.modo-mobile-forcado .mobile-bottom-nav {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--painel-borda);
+  z-index: 9999;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+}
+
+body.modo-mobile-forcado .mobile-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  color: var(--texto-suave);
+  font-size: 0.72rem;
+  font-weight: 700;
+  height: 100%;
+  cursor: pointer;
+}
+
+body.modo-mobile-forcado .mobile-nav-item.ativo {
+  color: var(--acento);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   NVIDIA NEMOTRON AI CORE & HUD COMPONENTS
+   ========================================================================== */
+
+/* Badge de Status do Nemotron na Topbar */
+.nemotron-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 243, 255, 0.08);
+  border: 1px solid var(--acento);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-family: var(--font-hud);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--acento);
+  letter-spacing: 1px;
+  box-shadow: 0 0 12px rgba(0, 243, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nemotron-badge:hover {
+  background: rgba(0, 243, 255, 0.18);
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+  transform: scale(1.02);
+}
+
+.nemotron-pulse-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--cyber-green);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--cyber-green);
+  animation: pulseNeon 1.8s infinite ease-in-out;
+}
+
+@keyframes pulseNeon {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.3); }
+}
+
+/* Botão Flutuante (FAB) do Nemotron AI */
+.nemotron-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  background: linear-gradient(135deg, rgba(12, 17, 26, 0.95), rgba(0, 243, 255, 0.25));
+  border: 1.5px solid var(--acento);
+  color: var(--acento);
+  border-radius: 50px;
+  padding: 12px 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-cyber);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 30px rgba(0, 243, 255, 0.3), inset 0 0 15px rgba(0, 243, 255, 0.15);
+  backdrop-filter: blur(16px);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.nemotron-fab:hover {
+  transform: translateY(-4px) scale(1.05);
+  background: linear-gradient(135deg, var(--acento), var(--cyber-violet));
+  color: #000000;
+  box-shadow: 0 12px 40px rgba(0, 243, 255, 0.6);
+}
+
+.nemotron-fab .icon {
+  font-size: 1.2rem;
+  animation: rotateIcon 10s linear infinite;
+}
+
+@keyframes rotateIcon {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Drawer / Chat Modal do Nemotron AI */
+.nemotron-drawer {
+  position: fixed;
+  bottom: 84px;
+  right: 24px;
+  width: 420px;
+  max-width: calc(100vw - 32px);
+  height: 580px;
+  max-height: calc(100vh - 120px);
+  background: rgba(10, 14, 22, 0.94);
+  border: 1px solid var(--acento);
+  border-radius: 20px;
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 243, 255, 0.25);
+  backdrop-filter: blur(24px);
+  z-index: 9998;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px) scale(0.95);
+}
+
+.nemotron-drawer.aberto {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0) scale(1);
+}
+
+.nemotron-drawer-header {
+  background: rgba(0, 243, 255, 0.06);
+  border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nemotron-drawer-header h3 {
+  font-family: var(--font-cyber);
+  font-size: 0.95rem;
+  letter-spacing: 1px;
+  color: var(--acento);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.nemotron-chat-body {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 0.88rem;
+}
+
+.nemotron-msg {
+  padding: 12px 16px;
+  border-radius: 14px;
+  line-height: 1.5;
+  max-width: 88%;
+  word-wrap: break-word;
+  animation: fadeIn 0.3s ease;
+}
+
+.nemotron-msg.user {
+  align-self: flex-end;
+  background: rgba(0, 243, 255, 0.15);
+  border: 1px solid rgba(0, 243, 255, 0.4);
+  color: var(--texto);
+  border-bottom-right-radius: 2px;
+}
+
+.nemotron-msg.ai {
+  align-self: flex-start;
+  background: rgba(18, 25, 38, 0.9);
+  border: 1px solid rgba(157, 78, 221, 0.3);
+  color: #e2e8f0;
+  border-bottom-left-radius: 2px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.nemotron-msg.ai strong {
+  color: var(--acento);
+}
+
+.nemotron-prompt-chips {
+  display: flex;
+  gap: 6px;
+  padding: 8px 16px;
+  overflow-x: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.chip-btn {
+  background: rgba(0, 243, 255, 0.08);
+  border: 1px solid rgba(0, 243, 255, 0.2);
+  color: var(--acento);
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chip-btn:hover {
+  background: var(--acento);
+  color: #000;
+}
+
+.nemotron-chat-input {
+  padding: 12px 16px;
+  background: rgba(6, 9, 15, 0.8);
+  border-top: 1px solid rgba(0, 243, 255, 0.2);
+  display: flex;
+  gap: 8px;
+}
+
+.nemotron-chat-input input {
+  flex: 1;
+  background: rgba(18, 25, 38, 0.8);
+  border: 1px solid rgba(0, 243, 255, 0.25);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #fff;
+  font-size: 0.88rem;
+  outline: none;
+}
+
+.nemotron-chat-input input:focus {
+  border-color: var(--acento);
+  box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+}
+
+.nemotron-chat-input button {
+  background: var(--acento);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  padding: 0 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nemotron-chat-input button:hover {
+  box-shadow: 0 0 12px var(--acento);
+  transform: scale(1.05);
+}
+
+/* Botão de Prescrição Neural no Painel */
+.btn-neural-prescribe {
+  background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(157, 78, 221, 0.3)) !important;
+  border: 1px solid var(--acento) !important;
+  color: #ffffff !important;
+  font-family: var(--font-cyber);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.25);
+}
+
+.btn-neural-prescribe:hover {
+  background: linear-gradient(135deg, var(--acento), var(--cyber-magenta)) !important;
+  color: #000000 !important;
+  box-shadow: 0 0 25px rgba(0, 243, 255, 0.6);
+  transform: translateY(-2px);
+}
+
+
+/* Print CSS Rules */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .topbar, .cards, .no-print, .modal-fundo, .mobile-bottom-nav {
+    display: none !important;
+  }
+  .app {
+    padding: 0;
+    max-width: 100%;
+  }
+  .relatorio {
+    box-shadow: none;
+    padding: 0;
+    max-width: 100%;
+  }
+}
