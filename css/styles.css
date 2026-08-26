@@ -979,6 +979,7 @@ input:focus, textarea:focus, select:focus {
   max-width: 860px;
   margin: 0 auto;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  overflow-x: auto;
 }
 
 .relatorio header {
@@ -988,6 +989,8 @@ input:focus, textarea:focus, select:focus {
   border-bottom: 2px solid #1c2228;
   padding-bottom: 14px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .relatorio h1 {
@@ -1010,6 +1013,7 @@ input:focus, textarea:focus, select:focus {
   border-collapse: collapse;
   margin-top: 18px;
   font-size: 0.88rem;
+  display: table;
 }
 
 .relatorio-tabela th, .relatorio-tabela td {
@@ -1024,6 +1028,20 @@ input:focus, textarea:focus, select:focus {
   font-weight: 700;
   font-size: 0.75rem;
   text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .relatorio {
+    padding: 18px 14px;
+    border-radius: 14px;
+  }
+  .relatorio h1 {
+    font-size: 1.25rem;
+  }
+  .relatorio-tabela th, .relatorio-tabela td {
+    padding: 6px 8px;
+    font-size: 0.76rem;
+  }
 }
 
 .rodape {
@@ -1049,8 +1067,28 @@ input:focus, textarea:focus, select:focus {
   }
 
   body:not(.modo-desktop-forcado) .topbar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    position: static;
     margin-bottom: 16px;
-    padding-bottom: 12px;
+    padding-bottom: 14px;
+  }
+
+  body:not(.modo-desktop-forcado) .topbar .logo {
+    position: static;
+    margin: 0 auto;
+  }
+
+  body:not(.modo-desktop-forcado) .nav-botoes,
+  body:not(.modo-desktop-forcado) .topbar-direita {
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
   }
 
   body:not(.modo-desktop-forcado) .topbar h1 {

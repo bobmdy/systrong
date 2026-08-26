@@ -864,7 +864,7 @@ function salvarProgramaTreino(e) {
         nome: 'TREINO A',
         nivel: aluno.objetivo === 'REAB' ? 'REABILITAÇÃO' : 'GERAL',
         exercicios: exercicios.length > 0 ? exercicios : [
-          { name: 'Exercício Geral 1', series: '3', reps: '12', carga: '10', obs: '' }
+          { nome: 'Exercício Geral 1', series: '3', reps: '12', carga: '10', obs: '' }
         ]
       }
     ]
