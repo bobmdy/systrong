@@ -1,5 +1,13 @@
 # ⚡ SYSTRONG — Sistema de Prescrição de Treinos & Acompanhamento Clínico (Cyberpunk Edition)
 
+> ⚠️ **Aviso de segurança:** este projeto é um protótipo 100% client-side (HTML/CSS/JS
+> estático, sem backend, sem banco de dados). A tela de login **não autentica de
+> verdade** — qualquer usuário/senha entra — e todos os dados ficam em texto puro no
+> `localStorage` do navegador, sem isolamento entre "pacientes" nem controle de acesso
+> real. **Não use este sistema com dados reais de pacientes** enquanto não houver um
+> backend com autenticação e autorização de verdade. Detalhes completos em
+> [`docs/security-audit/relatorio-auditoria-seguranca.pdf`](docs/security-audit/relatorio-auditoria-seguranca.pdf).
+
 **SYSTRONG** é uma plataforma web de alta tecnologia desenvolvida para personal trainers, fisioterapeutas e profissionais da saúde prescritores de treinos. O sistema combina estética **Cyberpunk Glassmorphism 2.0**, animações neurais dinâmicas e integração com o motor **NVIDIA Nemotron AI Core**.
 
 ![SYSTRONG Preview](assets/images/logo.png)

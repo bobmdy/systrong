@@ -48,6 +48,10 @@ class NemotronCore {
     };
   }
 
+  // ⚠️ ATENÇÃO (segurança): a chave fica em texto puro no localStorage, legível por
+  // qualquer XSS da página. Nenhum elemento da UI chama este método hoje — antes de
+  // expor uma tela de configuração de chave, prefira um proxy backend (a chave nunca
+  // chega ao navegador) em vez de armazená-la aqui client-side.
   setApiKey(key) {
     this.apiKey = key;
     localStorage.setItem('systrong_nemotron_api_key', key);
@@ -122,10 +126,11 @@ class NemotronCore {
     const base = this.knowledgeBase[obj] || this.knowledgeBase['FORT'];
 
     // Personalização dinâmica com base nas observações do aluno
+    const condicaoTexto = aluno.condicaoSaude || aluno.condicao || '';
     const exerciciosPersonalizados = base.exercicios.map(ex => {
       let obsCustom = ex.obs;
-      if (aluno.condicao && aluno.condicao.length > 5) {
-        obsCustom += ` | Nota Neural: Atenção para: ${aluno.condicao.substring(0, 35)}...`;
+      if (condicaoTexto && condicaoTexto.length > 5) {
+        obsCustom += ` | Nota Neural: Atenção para: ${condicaoTexto.substring(0, 45)}...`;
       }
       return { ...ex, obs: obsCustom };
     });
