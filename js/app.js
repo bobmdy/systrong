@@ -271,7 +271,6 @@ function configurarEventos() {
   document.getElementById('btn-logout')?.addEventListener('click', fazerLogout);
 
   document.getElementById('btn-tema')?.addEventListener('click', alternarTema);
-  document.getElementById('btn-abrir-nemotron')?.addEventListener('click', () => toggleNemotronDrawer());
   document.getElementById('btn-exportar-backup')?.addEventListener('click', exportarBackupJSON);
   document.getElementById('btn-modo-visao')?.addEventListener('click', alternarModoVisao);
 
@@ -311,10 +310,6 @@ function configurarEventos() {
   document.getElementById('btn-buscar-pubmed')?.addEventListener('click', buscarPubMed);
   document.getElementById('btn-calc-imc')?.addEventListener('click', calcularIMC);
   document.getElementById('btn-calc-tmb')?.addEventListener('click', calcularTMB);
-
-  // Eventos do NVIDIA Nemotron AI Core
-  document.getElementById('btn-fechar-nemotron')?.addEventListener('click', () => toggleNemotronDrawer(false));
-  document.getElementById('btn-enviar-nemotron')?.addEventListener('click', enviarMensagemNemotron);
 
   // Modais - Fechar ao clicar ou tocar no fundo (backdrop)
   document.querySelectorAll('.modal-fundo').forEach(fundo => {
@@ -562,7 +557,6 @@ function renderizarFichaAluno() {
           <div class="secao-cabecalho" style="flex-wrap:wrap; gap:10px;">
             <h3>💪 Prescrição de Treinos</h3>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              <button class="btn-neural-prescribe" onclick="prescreverViaNemotron('${aluno.id}')" title="Gerar Prescrição Automatizada com NVIDIA Nemotron AI">⚡ Prescrever com Nemotron AI</button>
               <button class="btn-mini" onclick="abrirModalPrograma()">➕ Criar Programa</button>
             </div>
           </div>
@@ -570,7 +564,7 @@ function renderizarFichaAluno() {
           ${aluno.programas.length === 0 ? `
             <div class="vazio" style="padding:20px; text-align:center;">
               Nenhum programa de treino cadastrado.<br>
-              <span style="color:var(--acento); cursor:pointer; font-weight:700;" onclick="prescreverViaNemotron('${aluno.id}')">Clique aqui para gerar uma série com Nemotron AI</span> ou crie manualmente.
+              <span style="color:var(--acento); cursor:pointer; font-weight:700;" onclick="abrirModalPrograma()">Clique aqui para prescrever</span> ou crie manualmente.
             </div>
           ` : aluno.programas.map((prog, idxProg) => `
             <div class="programa ${prog.atual ? 'atual' : ''}">
@@ -1429,111 +1423,3 @@ function calcularTMB() {
   }
 }
 
-/* ==========================================================================
-   FUNÇÕES INTEGRADAS DO NVIDIA NEMOTRON AI CORE
-   ========================================================================== */
-
-// Prescrição de Treino via Nemotron Core
-function prescreverViaNemotron(idAluno) {
-  const aluno = state.alunos.find(a => a.id === idAluno);
-  if (!aluno) return;
-
-  if (!window.nemotronCore) {
-    alert("O Nemotron AI Core ainda está inicializando.");
-    return;
-  }
-
-  // Gera a prescrição baseada no objetivo e anamnese do aluno
-  const prescr = window.nemotronCore.generatePrescription(aluno);
-
-  const novoPrograma = {
-    id: 'prog-nemo-' + Date.now(),
-    dataInicio: new Date().toISOString().split('T')[0],
-    dataFim: 'Indefinido (Série Neural AI)',
-    atual: true,
-    treinos: [
-      {
-        nome: 'TREINO NEURAL (NEMOTRON AI)',
-        nivel: prescr.objetivo,
-        exercicios: prescr.exercicios
-      }
-    ]
-  };
-
-  if (!aluno.programas) aluno.programas = [];
-  // Marcar outros como não atuais
-  aluno.programas.forEach(p => p.atual = false);
-  aluno.programas.unshift(novoPrograma);
-
-  salvarEstado();
-  renderizarFichaAluno();
-
-  // Abrir o chat do Nemotron com o feedback do treino gerado
-  toggleNemotronDrawer(true);
-  adicionarMensagemChatNemotron('ai', `⚡ **Prescrição Neural Gerada com Sucesso!**\n\nPrescrevi um novo programa para **${aluno.nome}** (${aluno.objetivo}).\n\n📋 **Diretrizes Clínicas**: ${prescr.diretrizes}`);
-}
-
-// Abrir / Fechar o Drawer do Nemotron AI
-function toggleNemotronDrawer(forcarAbrir = null) {
-  const drawer = document.getElementById('nemotron-drawer');
-  if (!drawer) return;
-
-  if (forcarAbrir === true) {
-    drawer.classList.add('aberto');
-  } else if (forcarAbrir === false) {
-    drawer.classList.remove('aberto');
-  } else {
-    drawer.classList.toggle('aberto');
-  }
-}
-
-// Enviar Mensagem no Chat do Nemotron AI
-async function enviarMensagemNemotron() {
-  const input = document.getElementById('input-nemotron');
-  if (!input) return;
-  const texto = input.value.trim();
-  if (!texto) return;
-
-  input.value = '';
-  adicionarMensagemChatNemotron('user', texto);
-
-  const loadingMsg = adicionarMensagemChatNemotron('ai', '⚡ *Nemotron Core processando matriz neural...*');
-
-  try {
-    const resposta = await window.nemotronCore.query(texto);
-    if (loadingMsg) loadingMsg.remove();
-    adicionarMensagemChatNemotron('ai', resposta);
-  } catch (err) {
-    if (loadingMsg) loadingMsg.remove();
-    adicionarMensagemChatNemotron('ai', '⚠️ Erro ao comunicar com o Nemotron Core.');
-  }
-}
-
-// Handler de Enter no Chat Input
-function tratarKeypressNemotron(e) {
-  if (e.key === 'Enter') {
-    enviarMensagemNemotron();
-  }
-}
-
-// Handler dos Chips de Atalho do Nemotron
-function enviarPromptRapidoNemotron(promptChip) {
-  const input = document.getElementById('input-nemotron');
-  if (input) {
-    input.value = promptChip;
-    enviarMensagemNemotron();
-  }
-}
-
-// Helper para adicionar bolha de mensagem no chat
-function adicionarMensagemChatNemotron(tipo, texto) {
-  const chatBody = document.getElementById('nemotron-chat-body');
-  if (!chatBody) return null;
-
-  const msgDiv = document.createElement('div');
-  msgDiv.className = `nemotron-msg ${tipo}`;
-  msgDiv.innerHTML = escapeHtml(texto).replace(/\n/g, '<br>');
-  chatBody.appendChild(msgDiv);
-  chatBody.scrollTop = chatBody.scrollHeight;
-  return msgDiv;
-}

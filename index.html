@@ -59,7 +59,6 @@
     <header class="topbar">
       <div class="nav-botoes">
         <button id="btn-tema" title="Alternar Tema Dark/Light">🌙</button>
-        <button class="btn-nemotron-topbar" id="btn-abrir-nemotron" title="Abrir Assistente NVIDIA Nemotron AI">⚡ Nemotron AI</button>
       </div>
 
       <div class="logo">
@@ -202,10 +201,6 @@
     <button class="mobile-nav-item" data-aba="ficha" onclick="alternarAbaMobile('ficha')">
       <span class="icon">📋</span>
       <span>Ficha</span>
-    </button>
-    <button class="mobile-nav-item" onclick="toggleNemotronDrawer()" style="color:var(--acento);">
-      <span class="icon">⚡</span>
-      <span>Nemotron</span>
     </button>
     <button class="mobile-nav-item" onclick="abrirModal('modal-aluno')" style="color:var(--cyber-green);">
       <span class="icon">👤+</span>
@@ -353,35 +348,8 @@
     </div>
   </div>
 
-  <!-- Drawer / Chat Modal do NVIDIA Nemotron AI -->
-  <div class="nemotron-drawer" id="nemotron-drawer">
-    <div class="nemotron-drawer-header">
-      <h3>⚡ NVIDIA Nemotron v3.1 Core</h3>
-      <button class="btn-fechar" id="btn-fechar-nemotron" style="background:none; border:none; color:var(--texto-suave); font-size:1.4rem; cursor:pointer;">&times;</button>
-    </div>
-
-    <div class="nemotron-chat-body" id="nemotron-chat-body">
-      <div class="nemotron-msg ai">
-        <strong>⚡ Nemotron Core:</strong> Olá! Sou o assistente neural <strong>NVIDIA Nemotron</strong> especialista em biomecânica, medicina do esporte e prescrição de treinos.<br><br>Como posso ajudar na sua prescrição clínica hoje?
-      </div>
-    </div>
-
-    <div class="nemotron-prompt-chips">
-      <button class="chip-btn" onclick="enviarPromptRapidoNemotron('Prescrever Treino REAB')">🏥 Treino REAB</button>
-      <button class="chip-btn" onclick="enviarPromptRapidoNemotron('Prescrever Treino FORT')">💪 Treino FORT</button>
-      <button class="chip-btn" onclick="enviarPromptRapidoNemotron('Análise de Hipertensão')">🫀 Análise de PA</button>
-      <button class="chip-btn" onclick="enviarPromptRapidoNemotron('Evidências PubMed')">📚 PubMed Sci</button>
-    </div>
-
-    <div class="nemotron-chat-input">
-      <input type="text" id="input-nemotron" placeholder="Pergunte ao Nemotron AI..." onkeypress="tratarKeypressNemotron(event)">
-      <button type="button" id="btn-enviar-nemotron">Enviar</button>
-    </div>
-  </div>
-
-  <!-- JavaScript Core & Nemotron Modules -->
+  <!-- JavaScript Core -->
   <script src="js/cyber-canvas.js"></script>
-  <script src="js/nemotron-core.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

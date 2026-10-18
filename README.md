@@ -8,7 +8,7 @@
 > backend com autenticação e autorização de verdade. Detalhes completos em
 > [`docs/security-audit/relatorio-auditoria-seguranca.pdf`](docs/security-audit/relatorio-auditoria-seguranca.pdf).
 
-**SYSTRONG** é uma plataforma web de alta tecnologia desenvolvida para personal trainers, fisioterapeutas e profissionais da saúde prescritores de treinos. O sistema combina estética **Cyberpunk Glassmorphism 2.0**, animações neurais dinâmicas e integração com o motor **NVIDIA Nemotron AI Core**.
+**SYSTRONG** é uma plataforma web de alta tecnologia desenvolvida para personal trainers, fisioterapeutas e profissionais da saúde prescritores de treinos. O sistema combina estética **Cyberpunk Glassmorphism 2.0**, animações neurais dinâmicas e gerenciamento clínico integrado.
 
 ![SYSTRONG Preview](assets/images/logo.png)
 
@@ -22,13 +22,9 @@
   - Tipografia de alta precisão usando as fontes Google **Orbitron**, **Rajdhani** e **Outfit**.
   - Suporte completo a **Dark Mode** e **Light Mode** com alternância instantânea.
 
-- **⚡ NVIDIA Nemotron AI Core**:
-  - **Motor Híbrido de Inteligência Artificial**: Conecta-se à API oficial **NVIDIA NIM Cloud** (`llama-3.1-nemotron-70b-instruct`) ou executa via motor neural local integrado.
-  - **Prescrição Clínica Automatizada**: Gera fichas de treino completas personalizadas com base nos perfis:
-    - **REAB**: Reabilitação & Fisioterapia
-    - **FORT**: Hipertrofia & Fortalecimento
-    - **OBES**: Emagrecimento, Obesidade & Controle Metabólico
-  - **Análise Cardiorrespiratória & PA**: Avaliação de medições de Pressão Arterial com alertas de segurança e contraindicações clínicas.
+- **💪 Prescrição & Programas de Treino**:
+  - Criação de programas personalizados por objetivos (Reabilitação, Fortalecimento/Hipertrofia, Emagrecimento/Metabólico).
+  - Organização por divisões de treino (A/B/C), séries, repetições, intervalos e cargas.
 
 - **👥 Gestão Completa de Alunos & Pacientes**:
   - Fichas clínicas com anamnese, restrições médicas e arquivos/exames anexados.
@@ -48,7 +44,6 @@
 - **HTML5 Semântico**
 - **CSS3 Puro** (Glassmorphism 2.0, CSS Grid, Variáveis Globais, Animações Keyframes)
 - **JavaScript ES6+** (Estado reativo, LocalStorage, Web Canvas 2D/3D API)
-- **NVIDIA NIM API / Nemotron AI Engine**
 
 ---
 
