@@ -53,108 +53,12 @@
     </div>
   </div>
 
-  <!-- Nova Página de Entrada Rápida de Sinais Vitais (Pós-Login) -->
-  <div class="tela-checkin" id="tela-checkin-rapido" style="display:none;">
-    <header class="topbar-checkin">
-      <div class="logo">
-        <img src="assets/images/logo.png" alt="SYSTRONG Logo" class="logo-img">
-        <p>TST PROGRAM</p>
-      </div>
-      <div class="relogio-live" id="relogio-checkin">
-        <span class="icon">⏰</span> <span id="relogio-hora">--:--:--</span>
-      </div>
-      <div class="topbar-checkin-acoes">
-        <button class="btn-checkin-painel" id="btn-ir-painel" onclick="navegarPara('dashboard')" title="Ir para o Dashboard Geral">📊 Painel Completo</button>
-        <button id="btn-tema-checkin" onclick="alternarTema()" title="Alternar Tema Dark/Light">🌙</button>
-        <button class="btn-sair" onclick="fazerLogout()" title="Sair do Sistema">🚪 Sair</button>
-      </div>
-    </header>
-
-    <main class="checkin-container">
-      <div class="checkin-card">
-        <div class="checkin-cabecalho">
-          <div class="badge-tag">⚡ TERMINAL DE SINAIS VITAIS</div>
-          <h2>Check-in Rápido do Paciente</h2>
-          <p>Digite a pressão e o pulso. O sistema associa automaticamente ao paciente pelo nome reduzido ou horário da sessão.</p>
-        </div>
-
-        <!-- Banner de Sugestão por Horário -->
-        <div class="sugestao-horario-box" id="box-sugestao-horario">
-          <div class="sugestao-info">
-            <span class="sugestao-rotulo">🕒 Sugestão para o horário atual:</span>
-            <strong id="sugestao-paciente-nome">Carregando...</strong>
-            <span class="sugestao-horario-tag" id="sugestao-paciente-hora">--:--</span>
-          </div>
-          <button type="button" class="btn-usar-sugestao" id="btn-usar-sugestao" onclick="usarPacienteSugerido()">Usar este</button>
-        </div>
-
-        <!-- Atalhos rápidos dos pacientes de hoje -->
-        <div class="atalhos-pacientes-hoje" id="container-chips-pacientes">
-          <!-- Chips gerados dinamicamente via JS -->
-        </div>
-
-        <!-- Formulário de Registro -->
-        <form id="form-checkin-rapido" class="form-checkin" onsubmit="registrarSinaisVitaisRapido(event)">
-          <div class="grid-sinais-vitais">
-            <div class="campo-vital">
-              <label for="quick-sys">SYS <small>(mmHg)</small></label>
-              <input type="number" id="quick-sys" placeholder="120" required min="40" max="260">
-              <span class="dica-campo">Sistólica</span>
-            </div>
-
-            <div class="campo-vital">
-              <label for="quick-dia">DIA <small>(mmHg)</small></label>
-              <input type="number" id="quick-dia" placeholder="80" required min="30" max="160">
-              <span class="dica-campo">Diastólica</span>
-            </div>
-
-            <div class="campo-vital">
-              <label for="quick-pulse">PULSE <small>(BPM)</small></label>
-              <input type="number" id="quick-pulse" placeholder="72" min="30" max="220">
-              <span class="dica-campo">Frequência</span>
-            </div>
-          </div>
-
-          <div class="campo-paciente-checkin">
-            <label for="quick-paciente">PACIENTE <small>(Digite o nome, ID curto ex: "Luis H", ou deixe em branco para o horário atual)</small></label>
-            <div class="input-com-autocomplete">
-              <input type="text" id="quick-paciente" placeholder="Ex: Luis H ou nome..." autocomplete="off" oninput="atualizarMatchPacienteVisual()">
-              <button type="button" class="btn-limpar-paciente" onclick="limparInputPacienteQuick()" title="Limpar">✕</button>
-            </div>
-            <div class="match-paciente-indicador" id="match-paciente-indicador">
-              <!-- Indicador do paciente detectado -->
-            </div>
-          </div>
-
-          <button type="submit" class="btn-enviar-checkin" id="btn-submit-checkin">
-            ⚡ Gravar Sinais Vitais do Paciente
-          </button>
-        </form>
-
-        <!-- Feedback de Sucesso -->
-        <div class="feedback-checkin" id="feedback-checkin" style="display:none;"></div>
-      </div>
-
-      <!-- Feed dos Últimos Registros Realizados -->
-      <div class="historico-checkin-card">
-        <div class="historico-header">
-          <h3>📋 Últimos Registros Desta Sessão</h3>
-          <button class="btn-mini" onclick="navegarPara('dashboard')" style="background:transparent; border:1px solid var(--acento); color:var(--acento);">Ver Todos no Painel ➡️</button>
-        </div>
-        <div class="feed-checkins" id="feed-checkins-recentes">
-          <!-- Inserido dinamicamente -->
-        </div>
-      </div>
-    </main>
-  </div>
-
   <!-- Dashboard da Aplicação Principal -->
   <div class="app" id="app-dashboard" style="display:none;">
     <!-- Topbar / Header com Logo Oficial -->
     <header class="topbar">
       <div class="nav-botoes">
         <button id="btn-tema" title="Alternar Tema Dark/Light">🌙</button>
-        <button class="btn-quick-checkin-topbar" onclick="navegarPara('checkin')" title="Ir para o Registro Rápido de Sinais Vitais">⚡ Check-in Rápido</button>
       </div>
 
       <div class="logo">
@@ -290,10 +194,6 @@
 
   <!-- Barra de Navegação Inferior Fixa para Dispositivos Móveis (Mobile Bottom Nav) -->
   <nav class="mobile-bottom-nav">
-    <button class="mobile-nav-item" onclick="navegarPara('checkin')" style="color:var(--acento);">
-      <span class="icon">⚡</span>
-      <span>Check-in</span>
-    </button>
     <button class="mobile-nav-item ativo" data-aba="pacientes" onclick="alternarAbaMobile('pacientes')">
       <span class="icon">👥</span>
       <span>Pacientes</span>
@@ -322,18 +222,7 @@
       <form id="form-aluno" class="form-aluno">
         <div class="campo">
           <label>Nome Completo</label>
-          <input type="text" id="nome-aluno" placeholder="Ex: Luis Henrique da Silva" required>
-        </div>
-
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-          <div class="campo">
-            <label>Horário da Sessão</label>
-            <input type="time" id="horario-aluno" required value="14:00">
-          </div>
-          <div class="campo">
-            <label>ID Curto / Apelido (ex: Luis H)</label>
-            <input type="text" id="nome-curto-aluno" placeholder="Ex: Luis H">
-          </div>
+          <input type="text" id="nome-aluno" placeholder="Ex: Lucas Gabriel" required>
         </div>
 
         <div class="campo">
@@ -394,17 +283,6 @@
         <div class="campo">
           <label>Nome Completo</label>
           <input type="text" id="edit-nome-aluno" required>
-        </div>
-
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-          <div class="campo">
-            <label>Horário da Sessão</label>
-            <input type="time" id="edit-horario-aluno">
-          </div>
-          <div class="campo">
-            <label>ID Curto / Apelido (ex: Luis H)</label>
-            <input type="text" id="edit-nome-curto-aluno" placeholder="Ex: Luis H">
-          </div>
         </div>
 
         <div class="campo">
