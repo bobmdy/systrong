@@ -20,6 +20,8 @@ let state = {
   modoVisao: 'auto', // 'auto', 'mobile', 'desktop'
   abaMobileAtiva: 'pacientes', // 'pacientes', 'ficha', 'tools'
   autenticado: false,
+  telaAtual: 'checkin', // 'checkin' (página inicial pós-login) ou 'dashboard'
+  registrosSessao: [],
   filtroObjetivo: 'TODOS',
   filtroBusca: ''
 };
@@ -32,6 +34,8 @@ const demoData = [
   {
     id: 'aluno-1',
     nome: 'Carlos Eduardo',
+    nomeCurto: 'Cadu',
+    horario: '09:00',
     idade: 42,
     objetivo: 'REAB',
     frequencia: ['Seg', 'Qua', 'Sex'],
@@ -78,6 +82,8 @@ const demoData = [
   {
     id: 'aluno-2',
     nome: 'Fernanda Souza',
+    nomeCurto: 'Fernanda S',
+    horario: '14:00',
     idade: 29,
     objetivo: 'FORT',
     frequencia: ['Ter', 'Qui', 'Sab'],
@@ -112,6 +118,8 @@ const demoData = [
   {
     id: 'aluno-3',
     nome: 'Ricardo Mendes',
+    nomeCurto: 'Ricardo M',
+    horario: '18:00',
     idade: 51,
     objetivo: 'OBES',
     frequencia: ['Seg', 'Ter', 'Qui', 'Sex'],
@@ -119,6 +127,22 @@ const demoData = [
     arquivos: [],
     pressao: [
       { data: '2026-08-09 18:00', sis: 138, dia: 89, pulso: 82 }
+    ],
+    programas: [],
+    artigos: []
+  },
+  {
+    id: 'aluno-4',
+    nome: 'Luis Henrique da Silva',
+    nomeCurto: 'Luis H',
+    horario: '15:00',
+    idade: 38,
+    objetivo: 'FORT',
+    frequencia: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'],
+    condicaoSaude: 'Acompanhamento preventivo de pressão e sobrecarga articular.',
+    arquivos: [],
+    pressao: [
+      { data: '2026-08-11 14:55', sis: 120, dia: 80, pulso: 72 }
     ],
     programas: [],
     artigos: []
@@ -152,9 +176,19 @@ function carregarEstado() {
     state.alunos = demoData;
   }
 
+  // Preenchimento defensivo de horário e nomeCurto para dados legados
+  state.alunos.forEach(a => {
+    if (!a.horario) a.horario = '14:00';
+    if (!a.nomeCurto) {
+      const partes = (a.nome || '').trim().split(/\s+/);
+      a.nomeCurto = partes.length > 1 ? `${partes[0]} ${partes[1][0]}` : partes[0];
+    }
+  });
+
   if (temaSalvo) state.tema = temaSalvo;
   if (visaoSalva) state.modoVisao = visaoSalva;
   state.autenticado = authSalva === 'true';
+  state.telaAtual = state.autenticado ? 'checkin' : 'login';
 
   document.documentElement.setAttribute('data-theme', state.tema);
   aplicarModoVisao();
@@ -173,6 +207,7 @@ function fazerLogin(e) {
 
   if (usuario && senha) {
     state.autenticado = true;
+    state.telaAtual = 'checkin'; // <--- Vai direto para a página de entrada rápida!
     localStorage.setItem('systrong_auth', 'true');
     if (erro) erro.style.display = 'none';
     renderizar();
@@ -183,6 +218,7 @@ function fazerLogin(e) {
 
 function fazerLogout() {
   state.autenticado = false;
+  state.telaAtual = 'login';
   localStorage.removeItem('systrong_auth');
   renderizar();
 }
@@ -362,20 +398,29 @@ function fecharModal(idModal) {
 // Renderizar toda a aplicação
 function renderizar() {
   const telaLogin = document.getElementById('tela-login');
+  const telaCheckin = document.getElementById('tela-checkin-rapido');
   const appDashboard = document.getElementById('app-dashboard');
 
   if (!state.autenticado) {
     if (telaLogin) telaLogin.classList.remove('oculto');
+    if (telaCheckin) telaCheckin.style.display = 'none';
     if (appDashboard) appDashboard.style.display = 'none';
     return;
-  } else {
-    if (telaLogin) telaLogin.classList.add('oculto');
-    if (appDashboard) appDashboard.style.display = 'flex';
   }
 
-  renderizarListaAlunos();
-  renderizarFichaAluno();
-  alternarAbaMobile(state.abaMobileAtiva);
+  if (telaLogin) telaLogin.classList.add('oculto');
+
+  if (state.telaAtual === 'checkin') {
+    if (telaCheckin) telaCheckin.style.display = 'block';
+    if (appDashboard) appDashboard.style.display = 'none';
+    renderizarTelaCheckin();
+  } else {
+    if (telaCheckin) telaCheckin.style.display = 'none';
+    if (appDashboard) appDashboard.style.display = 'flex';
+    renderizarListaAlunos();
+    renderizarFichaAluno();
+    alternarAbaMobile(state.abaMobileAtiva);
+  }
 }
 
 // Renderizar Lista de Alunos com Busca e Filtros
@@ -404,10 +449,13 @@ function renderizarListaAlunos() {
     return `
       <li class="${selecionado}" onclick="selecionarAluno('${aluno.id}')">
         <div class="aluno-item-cabecalho">
-          <span class="aluno-nome">${escapeHtml(aluno.nome)}</span>
+          <span class="aluno-nome">${escapeHtml(aluno.nome)} ${aluno.nomeCurto ? `<small style="color:var(--acento); font-size:0.75rem; font-weight:700;">(${escapeHtml(aluno.nomeCurto)})</small>` : ''}</span>
           <span class="badge ${badgeClass}">${aluno.objetivo}</span>
         </div>
-        <small>${aluno.idade} anos • ${(aluno.frequencia || []).join(', ')}</small>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+          <small>${aluno.idade} anos • ${(aluno.frequencia || []).join(', ')}</small>
+          ${aluno.horario ? `<small style="color:var(--cyber-green); font-weight:700;">🕒 ${aluno.horario}</small>` : ''}
+        </div>
       </li>
     `;
   }).join('');
@@ -459,6 +507,8 @@ function renderizarFichaAluno() {
             <div class="objetivo">${descObjetivo} • ${aluno.idade} Anos</div>
             <div class="resumo-treino">
               <span>📅 ${(aluno.frequencia || []).join(', ')}</span>
+              ${aluno.horario ? `<span>🕒 Horário: <strong>${aluno.horario}</strong></span>` : ''}
+              ${aluno.nomeCurto ? `<span>⚡ ID: <strong>${escapeHtml(aluno.nomeCurto)}</strong></span>` : ''}
               <span>📋 ${aluno.programas.length} Programa(s)</span>
               <span>📁 ${aluno.arquivos.length} Documento(s)</span>
             </div>
@@ -883,6 +933,8 @@ function gerarGraficoPressaoSVG(leituras) {
 function salvarNovoAluno(e) {
   e.preventDefault();
   const nome = document.getElementById('nome-aluno').value.trim();
+  const horario = document.getElementById('horario-aluno')?.value || '14:00';
+  const nomeCurtoInput = document.getElementById('nome-curto-aluno')?.value.trim();
   const idade = parseInt(document.getElementById('idade-aluno').value, 10);
   const condicaoSaude = document.getElementById('condicao-aluno').value.trim();
 
@@ -893,9 +945,14 @@ function salvarNovoAluno(e) {
 
   if (!nome) return;
 
+  const partes = nome.split(/\s+/);
+  const nomeCurto = nomeCurtoInput || (partes.length > 1 ? `${partes[0]} ${partes[1][0]}` : partes[0]);
+
   const novoAluno = {
     id: `aluno-${Date.now()}`,
     nome,
+    horario,
+    nomeCurto,
     idade: idade || 30,
     objetivo,
     frequencia: frequencia.length > 0 ? frequencia : ['Seg', 'Qua', 'Sex'],
@@ -921,6 +978,12 @@ function abrirModalEditarAluno(id) {
 
   document.getElementById('edit-aluno-id').value = aluno.id;
   document.getElementById('edit-nome-aluno').value = aluno.nome;
+  if (document.getElementById('edit-horario-aluno')) {
+    document.getElementById('edit-horario-aluno').value = aluno.horario || '14:00';
+  }
+  if (document.getElementById('edit-nome-curto-aluno')) {
+    document.getElementById('edit-nome-curto-aluno').value = aluno.nomeCurto || '';
+  }
   document.getElementById('edit-idade-aluno').value = aluno.idade || '';
   document.getElementById('edit-condicao-aluno').value = aluno.condicaoSaude || '';
 
@@ -954,6 +1017,8 @@ function salvarEdicaoAluno(e) {
   if (!aluno) return;
 
   const nome = document.getElementById('edit-nome-aluno').value.trim();
+  const horario = document.getElementById('edit-horario-aluno')?.value || aluno.horario || '14:00';
+  const nomeCurtoInput = document.getElementById('edit-nome-curto-aluno')?.value.trim();
   const idade = parseInt(document.getElementById('edit-idade-aluno').value, 10);
   const condicaoSaude = document.getElementById('edit-condicao-aluno').value.trim();
 
@@ -964,7 +1029,12 @@ function salvarEdicaoAluno(e) {
 
   if (!nome) return;
 
+  const partes = nome.split(/\s+/);
+  const nomeCurto = nomeCurtoInput || aluno.nomeCurto || (partes.length > 1 ? `${partes[0]} ${partes[1][0]}` : partes[0]);
+
   aluno.nome = nome;
+  aluno.horario = horario;
+  aluno.nomeCurto = nomeCurto;
   aluno.idade = idade || aluno.idade;
   aluno.objetivo = objetivo;
   aluno.frequencia = frequencia.length > 0 ? frequencia : aluno.frequencia;
@@ -1421,5 +1491,349 @@ function calcularTMB() {
       </div>
     `;
   }
+}
+
+/* ==========================================================================
+   TERMINAL DE CHECK-IN RÁPIDO DE SINAIS VITAIS (SYS, DIA, PULSE, PACIENTE)
+   ========================================================================== */
+
+let relogioIntervalId = null;
+
+// Navegar entre telas principais ('checkin', 'dashboard', 'login')
+function navegarPara(tela) {
+  state.telaAtual = tela;
+  renderizar();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function iniciarRelogioCheckin() {
+  if (relogioIntervalId) return;
+  atualizarHoraCheckin();
+  relogioIntervalId = setInterval(atualizarHoraCheckin, 1000);
+}
+
+function atualizarHoraCheckin() {
+  const el = document.getElementById('relogio-hora');
+  if (!el) return;
+  const agora = new Date();
+  el.textContent = agora.toLocaleTimeString('pt-BR');
+}
+
+// Converte string "HH:mm" em minutos desde meia-noite (0 a 1439)
+function converterHoraParaMinutos(strHora) {
+  if (!strHora || typeof strHora !== 'string') return 14 * 60; // 14:00 padrão
+  const partes = strHora.split(':');
+  const h = parseInt(partes[0], 10) || 0;
+  const m = parseInt(partes[1], 10) || 0;
+  return h * 60 + m;
+}
+
+// Localiza o paciente mais próximo do horário atual do relógio
+function getPacienteMaisProximoHorario() {
+  if (!state.alunos || state.alunos.length === 0) return null;
+  const agora = new Date();
+  const minutosAgora = agora.getHours() * 60 + agora.getMinutes();
+
+  let maisProximo = state.alunos[0];
+  let menorDif = Infinity;
+
+  state.alunos.forEach(aluno => {
+    const minAluno = converterHoraParaMinutos(aluno.horario || '14:00');
+    const dif = Math.abs(minutosAgora - minAluno);
+    if (dif < menorDif) {
+      menorDif = dif;
+      maisProximo = aluno;
+    }
+  });
+
+  return maisProximo;
+}
+
+// Remove acentos e normaliza para busca
+function normalizarTexto(txt) {
+  return (txt || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+
+// Resolve qual paciente corresponde ao texto digitado ou ao horário
+function resolverPacientePorTextoOuHorario(textoBusca) {
+  if (!state.alunos || state.alunos.length === 0) return null;
+
+  const termo = normalizarTexto(textoBusca);
+  if (!termo) {
+    // Se o campo estiver vazio, usa o mais próximo do horário atual
+    return getPacienteMaisProximoHorario();
+  }
+
+  // 1. Tentar bater exatamente com nomeCurto / ID Curto (ex: "luis h")
+  const matchExatoCurto = state.alunos.find(a => normalizarTexto(a.nomeCurto) === termo);
+  if (matchExatoCurto) return matchExatoCurto;
+
+  // 2. Tentar bater se nomeCurto começa com o termo
+  const matchComecoCurto = state.alunos.find(a => normalizarTexto(a.nomeCurto).startsWith(termo));
+  if (matchComecoCurto) return matchComecoCurto;
+
+  // 3. Tentar bater com o início do nome completo
+  const matchComecoNome = state.alunos.find(a => normalizarTexto(a.nome).startsWith(termo));
+  if (matchComecoNome) return matchComecoNome;
+
+  // 4. Tentar abreviação dinâmica (ex: "luis h" batendo com "Luis Henrique...")
+  const partesTermo = termo.split(/\s+/);
+  if (partesTermo.length >= 2) {
+    const p1 = partesTermo[0];
+    const p2 = partesTermo[1];
+    const matchAbrev = state.alunos.find(a => {
+      const nomes = normalizarTexto(a.nome).split(/\s+/);
+      return nomes.length >= 2 && nomes[0].startsWith(p1) && nomes[1].startsWith(p2);
+    });
+    if (matchAbrev) return matchAbrev;
+  }
+
+  // 5. Tentar se contém no nome
+  const matchesContem = state.alunos.filter(a => normalizarTexto(a.nome).includes(termo));
+  if (matchesContem.length === 1) return matchesContem[0];
+  if (matchesContem.length > 1) {
+    // Em caso de ambiguidade, desempatar pelo horário mais próximo
+    const agora = new Date();
+    const minAgora = agora.getHours() * 60 + agora.getMinutes();
+    matchesContem.sort((a, b) => {
+      const difA = Math.abs(minAgora - converterHoraParaMinutos(a.horario));
+      const difB = Math.abs(minAgora - converterHoraParaMinutos(b.horario));
+      return difA - difB;
+    });
+    return matchesContem[0];
+  }
+
+  return null;
+}
+
+// Renderizar tela de Check-in Rápido
+function renderizarTelaCheckin() {
+  iniciarRelogioCheckin();
+
+  const alunoSugerido = getPacienteMaisProximoHorario();
+  const nomeSugeridoEl = document.getElementById('sugestao-paciente-nome');
+  const horaSugeridoEl = document.getElementById('sugestao-paciente-hora');
+
+  if (alunoSugerido) {
+    if (nomeSugeridoEl) nomeSugeridoEl.textContent = `${alunoSugerido.nome} ${alunoSugerido.nomeCurto ? `(${alunoSugerido.nomeCurto})` : ''}`;
+    if (horaSugeridoEl) horaSugeridoEl.textContent = alunoSugerido.horario || '14:00';
+  } else {
+    if (nomeSugeridoEl) nomeSugeridoEl.textContent = 'Nenhum paciente cadastrado';
+    if (horaSugeridoEl) horaSugeridoEl.textContent = '--:--';
+  }
+
+  // Renderizar chips de atalho dos pacientes
+  renderizarChipsPacientesHoje();
+
+  // Atualizar indicador visual de match
+  atualizarMatchPacienteVisual();
+
+  // Renderizar feed recente
+  renderizarFeedCheckinsRecentes();
+}
+
+// Renderiza chips rápidos clicáveis para selecionar paciente com 1 toque
+function renderizarChipsPacientesHoje() {
+  const container = document.getElementById('container-chips-pacientes');
+  if (!container) return;
+
+  if (!state.alunos || state.alunos.length === 0) {
+    container.innerHTML = `<span style="font-size:0.8rem; color:var(--texto-suave);">Cadastre pacientes no sistema para vê-los aqui.</span>`;
+    return;
+  }
+
+  // Ordenar pacientes pelo horário
+  const listaOrdenada = [...state.alunos].sort((a, b) => {
+    return converterHoraParaMinutos(a.horario) - converterHoraParaMinutos(b.horario);
+  });
+
+  container.innerHTML = listaOrdenada.map(a => {
+    const rotulo = a.nomeCurto || a.nome.split(' ')[0];
+    return `
+      <button type="button" class="chip-paciente-checkin" onclick="selecionarPacienteParaQuick('${escapeHtml(a.id)}')">
+        <span class="chip-hora">${a.horario || '14:00'}</span>
+        <span class="chip-nome">${escapeHtml(rotulo)}</span>
+      </button>
+    `;
+  }).join('');
+}
+
+function selecionarPacienteParaQuick(id) {
+  const aluno = state.alunos.find(a => a.id === id);
+  if (!aluno) return;
+  const input = document.getElementById('quick-paciente');
+  if (input) {
+    input.value = aluno.nomeCurto || aluno.nome;
+    atualizarMatchPacienteVisual();
+  }
+}
+
+function usarPacienteSugerido() {
+  const aluno = getPacienteMaisProximoHorario();
+  if (aluno) {
+    selecionarPacienteParaQuick(aluno.id);
+  }
+}
+
+function limparInputPacienteQuick() {
+  const input = document.getElementById('quick-paciente');
+  if (input) {
+    input.value = '';
+    atualizarMatchPacienteVisual();
+    input.focus();
+  }
+}
+
+// Mostra o paciente identificado em tempo real enquanto o usuário digita
+function atualizarMatchPacienteVisual() {
+  const input = document.getElementById('quick-paciente');
+  const indicador = document.getElementById('match-paciente-indicador');
+  if (!indicador) return;
+
+  const termo = input ? input.value.trim() : '';
+  const aluno = resolverPacientePorTextoOuHorario(termo);
+
+  if (aluno) {
+    const motivo = termo ? 'Identificado por Nome / ID Curto' : 'Sugerido pelo Horário Atual';
+    indicador.className = 'match-paciente-indicador sucesso';
+    indicador.innerHTML = `
+      <span>🎯 <strong>${escapeHtml(aluno.nome)}</strong> ${aluno.nomeCurto ? `(${escapeHtml(aluno.nomeCurto)})` : ''} • 🕒 ${aluno.horario || '14:00'}</span>
+      <span class="match-motivo">${motivo}</span>
+    `;
+  } else {
+    indicador.className = 'match-paciente-indicador vazio';
+    indicador.innerHTML = `<span>⚠️ Nenhum paciente correspondente encontrado.</span>`;
+  }
+}
+
+// Registra a medição rápida e vincula ao paciente
+function registrarSinaisVitaisRapido(e) {
+  if (e) e.preventDefault();
+
+  const sysInput = document.getElementById('quick-sys');
+  const diaInput = document.getElementById('quick-dia');
+  const pulseInput = document.getElementById('quick-pulse');
+  const pacienteInput = document.getElementById('quick-paciente');
+
+  const sys = parseInt(sysInput?.value, 10);
+  const dia = parseInt(diaInput?.value, 10);
+  const pulse = parseInt(pulseInput?.value, 10) || null;
+  const pacienteTexto = pacienteInput ? pacienteInput.value.trim() : '';
+
+  if (isNaN(sys) || isNaN(dia)) {
+    alert('Por favor, informe os valores de SYS (Sistólica) e DIA (Diastólica).');
+    return;
+  }
+
+  const aluno = resolverPacientePorTextoOuHorario(pacienteTexto);
+  if (!aluno) {
+    alert('Não foi possível identificar o paciente. Verifique o nome/ID ou cadastre o paciente primeiro.');
+    return;
+  }
+
+  // Obter data/hora atual (YYYY-MM-DD HH:mm)
+  const agora = new Date();
+  const yyyy = agora.getFullYear();
+  const mm = String(agora.getMonth() + 1).padStart(2, '0');
+  const dd = String(agora.getDate()).padStart(2, '0');
+  const hh = String(agora.getHours()).padStart(2, '0');
+  const min = String(agora.getMinutes()).padStart(2, '0');
+  const dataFormatada = `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+
+  if (!aluno.pressao) aluno.pressao = [];
+  const novaMedicao = {
+    data: dataFormatada,
+    sis: sys,
+    dia: dia,
+    pulso: pulse
+  };
+  aluno.pressao.unshift(novaMedicao);
+
+  // Guardar no histórico da sessão
+  if (!state.registrosSessao) state.registrosSessao = [];
+  state.registrosSessao.unshift({
+    alunoId: aluno.id,
+    alunoNome: aluno.nome,
+    alunoNomeCurto: aluno.nomeCurto,
+    horario: aluno.horario,
+    ...novaMedicao
+  });
+
+  salvarEstado();
+
+  // Exibir feedback animado
+  const status = getStatusPressao(sys, dia);
+  exibirFeedbackQuickCheckin(aluno, novaMedicao, status);
+
+  // Limpar campos de medição e focar no SYS para a próxima digitação rápida
+  sysInput.value = '';
+  diaInput.value = '';
+  if (pulseInput) pulseInput.value = '';
+  if (pacienteInput) pacienteInput.value = '';
+
+  atualizarMatchPacienteVisual();
+  renderizarFeedCheckinsRecentes();
+  sysInput.focus();
+}
+
+function exibirFeedbackQuickCheckin(aluno, medicao, status) {
+  const box = document.getElementById('feedback-checkin');
+  if (!box) return;
+
+  box.style.display = 'block';
+  box.className = `feedback-checkin ${status.classe}`;
+  box.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <div>
+        <strong>✅ Medição registrada para ${escapeHtml(aluno.nome)}!</strong>
+        <div style="margin-top:2px; font-size:0.9rem;">
+          PA: <strong>${medicao.sis}/${medicao.dia} mmHg</strong> ${medicao.pulso ? `• Pulso: <strong>${medicao.pulso} BPM</strong>` : ''} • Status: <span style="font-weight:700;">${status.texto}</span>
+        </div>
+      </div>
+      <button type="button" class="btn-mini" onclick="abrirFichaAlunoDireto('${aluno.id}')" style="background:rgba(0,243,255,0.2); border:1px solid var(--acento); color:var(--acento); font-weight:700;">
+        Ver Ficha Completa 📋
+      </button>
+    </div>
+  `;
+}
+
+function abrirFichaAlunoDireto(alunoId) {
+  state.alunoSelecionadoId = alunoId;
+  navegarPara('dashboard');
+  const isMobile = state.modoVisao === 'mobile' || (state.modoVisao === 'auto' && window.innerWidth <= 768);
+  if (isMobile) alternarAbaMobile('ficha');
+}
+
+function renderizarFeedCheckinsRecentes() {
+  const container = document.getElementById('feed-checkins-recentes');
+  if (!container) return;
+
+  const registros = state.registrosSessao || [];
+  if (registros.length === 0) {
+    container.innerHTML = `
+      <div class="vazio" style="padding:16px; text-align:center; font-size:0.85rem;">
+        Nenhuma medição registrada nesta sessão ainda. Digite os sinais vitais acima para começar.
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = registros.slice(0, 5).map(reg => {
+    const status = getStatusPressao(reg.sis, reg.dia);
+    const horaApenas = reg.data.split(' ')[1] || reg.data;
+    return `
+      <div class="feed-item-checkin ${status.classe}">
+        <div class="feed-item-paciente">
+          <strong>${escapeHtml(reg.alunoNome)}</strong>
+          <small>${reg.alunoNomeCurto ? `(${escapeHtml(reg.alunoNomeCurto)}) • ` : ''}🕒 Horário: ${reg.horario || '--:--'}</small>
+        </div>
+        <div class="feed-item-dados">
+          <span class="feed-pa">${reg.sis}/${reg.dia} <small>mmHg</small></span>
+          ${reg.pulso ? `<span class="feed-pulso">${reg.pulso} BPM</span>` : ''}
+          <span class="feed-hora">${horaApenas}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
