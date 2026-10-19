@@ -44,10 +44,8 @@
 
         <button type="submit">ENTRAR NO SYSTRONG</button>
 
-        <div class="aviso-seguranca">
-          ⚠️ <strong>Protótipo sem autenticação real.</strong> Este login não valida
-          credenciais nem tem backend — qualquer usuário/senha entra, e os dados ficam
-          apenas neste navegador. Não use com dados reais de pacientes.
+        <div class="aviso-seguranca" style="margin-top:10px; font-size:0.78rem; color:var(--texto-suave);">
+          🔒 Acesso restrito aos usuários autorizados: <strong>admin</strong> ou <strong>ludy</strong>.
         </div>
       </form>
     </div>
@@ -64,6 +62,7 @@
         <span class="icon">⏰</span> <span id="relogio-hora">--:--:--</span>
       </div>
       <div class="topbar-checkin-acoes">
+        <span class="badge-usuario-logado" id="badge-usuario-checkin" style="font-size:0.8rem; font-family:var(--font-hud); color:var(--cyber-green); font-weight:700; background:rgba(0,255,136,0.08); border:1px solid rgba(0,255,136,0.3); padding:4px 10px; border-radius:12px; display:inline-flex; align-items:center; gap:4px;">👤 Admin</span>
         <button class="btn-checkin-painel" id="btn-ir-painel" onclick="navegarPara('dashboard')" title="Ir para o Dashboard Geral">📊 Painel Completo</button>
         <button id="btn-tema-checkin" onclick="alternarTema()" title="Alternar Tema Dark/Light">🌙</button>
         <button class="btn-sair" onclick="fazerLogout()" title="Sair do Sistema">🚪 Sair</button>
@@ -163,6 +162,7 @@
       </div>
 
       <div class="topbar-direita">
+        <span class="badge-usuario-logado" id="badge-usuario-dashboard" style="font-size:0.8rem; font-family:var(--font-hud); color:var(--cyber-green); font-weight:700; background:rgba(0,255,136,0.08); border:1px solid rgba(0,255,136,0.3); padding:4px 10px; border-radius:12px; display:inline-flex; align-items:center; gap:4px;">👤 Admin</span>
         <button class="btn-backup" id="btn-exportar-backup" title="Exportar Backup dos Dados (JSON)">💾 Backup</button>
         <label class="btn-backup" title="Restaurar Backup dos Dados" style="cursor:pointer; display:inline-flex; align-items:center;">
           📥 Restaurar

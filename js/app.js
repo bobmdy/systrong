@@ -12,6 +12,12 @@ function escapeHtml(texto) {
   return div.innerHTML;
 }
 
+// Usuários autorizados no sistema
+const USUARIOS_AUTORIZADOS = [
+  { login: 'admin', senha: '1234', nome: 'Admin' },
+  { login: 'ludy', senha: '1234', nome: 'Ludy' }
+];
+
 // Estado global da aplicação
 let state = {
   alunos: [],
@@ -20,6 +26,8 @@ let state = {
   modoVisao: 'auto', // 'auto', 'mobile', 'desktop'
   abaMobileAtiva: 'pacientes', // 'pacientes', 'ficha', 'tools'
   autenticado: false,
+  usuarioLogado: null,
+  nomeUsuarioLogado: null,
   telaAtual: 'checkin', // 'checkin' (página inicial pós-login) ou 'dashboard'
   registrosSessao: [],
   filtroObjetivo: 'TODOS',
@@ -188,6 +196,8 @@ function carregarEstado() {
   if (temaSalvo) state.tema = temaSalvo;
   if (visaoSalva) state.modoVisao = visaoSalva;
   state.autenticado = authSalva === 'true';
+  state.usuarioLogado = localStorage.getItem('systrong_user') || 'admin';
+  state.nomeUsuarioLogado = localStorage.getItem('systrong_user_name') || 'Admin';
   state.telaAtual = state.autenticado ? 'checkin' : 'login';
 
   document.documentElement.setAttribute('data-theme', state.tema);
@@ -201,25 +211,40 @@ function carregarEstado() {
 // Login & Logout
 function fazerLogin(e) {
   e.preventDefault();
-  const usuario = document.getElementById('login-usuario').value.trim();
-  const senha = document.getElementById('login-senha').value.trim();
+  const usuarioInput = document.getElementById('login-usuario').value.trim();
+  const senhaInput = document.getElementById('login-senha').value.trim();
   const erro = document.getElementById('erro-login');
 
-  if (usuario && senha) {
+  const contaValida = USUARIOS_AUTORIZADOS.find(
+    u => u.login.toLowerCase() === usuarioInput.toLowerCase() && u.senha === senhaInput
+  );
+
+  if (contaValida) {
     state.autenticado = true;
+    state.usuarioLogado = contaValida.login;
+    state.nomeUsuarioLogado = contaValida.nome;
     state.telaAtual = 'checkin'; // <--- Vai direto para a página de entrada rápida!
     localStorage.setItem('systrong_auth', 'true');
+    localStorage.setItem('systrong_user', contaValida.login);
+    localStorage.setItem('systrong_user_name', contaValida.nome);
     if (erro) erro.style.display = 'none';
     renderizar();
   } else {
-    if (erro) erro.style.display = 'block';
+    if (erro) {
+      erro.textContent = 'Usuário ou senha incorretos.';
+      erro.style.display = 'block';
+    }
   }
 }
 
 function fazerLogout() {
   state.autenticado = false;
+  state.usuarioLogado = null;
+  state.nomeUsuarioLogado = null;
   state.telaAtual = 'login';
   localStorage.removeItem('systrong_auth');
+  localStorage.removeItem('systrong_user');
+  localStorage.removeItem('systrong_user_name');
   renderizar();
 }
 
@@ -409,6 +434,13 @@ function renderizar() {
   }
 
   if (telaLogin) telaLogin.classList.add('oculto');
+
+  // Atualizar identificação do usuário logado na interface
+  const nomeExibicao = state.nomeUsuarioLogado || (state.usuarioLogado === 'ludy' ? 'Ludy' : 'Admin');
+  const badgeCheckin = document.getElementById('badge-usuario-checkin');
+  const badgeDashboard = document.getElementById('badge-usuario-dashboard');
+  if (badgeCheckin) badgeCheckin.innerHTML = `👤 ${escapeHtml(nomeExibicao)}`;
+  if (badgeDashboard) badgeDashboard.innerHTML = `👤 ${escapeHtml(nomeExibicao)}`;
 
   if (state.telaAtual === 'checkin') {
     if (telaCheckin) telaCheckin.style.display = 'block';
