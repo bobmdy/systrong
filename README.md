@@ -1,14 +1,8 @@
 # ⚡ SYSTRONG — Sistema de Prescrição de Treinos & Acompanhamento Clínico (Cyberpunk Edition)
 
-> ⚠️ **Aviso de segurança:** este projeto é um protótipo 100% client-side (HTML/CSS/JS
-> estático, sem backend, sem banco de dados). A tela de login **não autentica de
-> verdade** — qualquer usuário/senha entra — e todos os dados ficam em texto puro no
-> `localStorage` do navegador, sem isolamento entre "pacientes" nem controle de acesso
-> real. **Não use este sistema com dados reais de pacientes** enquanto não houver um
-> backend com autenticação e autorização de verdade. Detalhes completos em
-> [`docs/security-audit/relatorio-auditoria-seguranca.pdf`](docs/security-audit/relatorio-auditoria-seguranca.pdf).
+> 🔒 **Controle de Acesso & Nuvem Ativa:** O sistema possui contas de acesso autorizadas (`admin` e `ludy`), além de sincronização em tempo real multi-dispositivo (PC e Celular) integrada diretamente ao **Supabase**.
 
-**SYSTRONG** é uma plataforma web de alta tecnologia desenvolvida para personal trainers, fisioterapeutas e profissionais da saúde prescritores de treinos. O sistema combina estética **Cyberpunk Glassmorphism 2.0**, animações neurais dinâmicas e gerenciamento clínico integrado.
+**SYSTRONG** é uma plataforma web de alta tecnologia desenvolvida para personal trainers, fisioterapeutas e profissionais da saúde prescritores de treinos. O sistema combina estética **Cyberpunk Glassmorphism 2.0**, animações neurais dinâmicas, terminal de check-in expresso de sinais vitais e sincronização em nuvem instantânea.
 
 ![SYSTRONG Preview](assets/images/logo.png)
 
@@ -21,6 +15,12 @@
   - **Canvas Neural Interativo**: Rede de partículas 3D no fundo que reage ao movimento do cursor e cliques.
   - Tipografia de alta precisão usando as fontes Google **Orbitron**, **Rajdhani** e **Outfit**.
   - Suporte completo a **Dark Mode** e **Light Mode** com alternância instantânea.
+
+- **☁️ Sincronização em Nuvem & Multi-Dispositivo (Supabase Realtime)**:
+  - Integração nativa com banco de dados em nuvem PostgreSQL via Supabase.
+  - Sincronização contínua e bidirecional entre Celular e Computador.
+  - Pacientes cadastrados no celular aparecem instantaneamente no computador e vice-versa sem recarregar a tela.
+  - Modo híbrido (Offline-First / Cache Local com recuperação automática).
 
 - **⚡ Terminal Rápido de Sinais Vitais (Check-in Pós-Login)**:
   - Tela inicial rápida imediata após o login para registro instantâneo de sinais vitais.
