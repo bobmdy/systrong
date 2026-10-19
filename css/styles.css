@@ -1478,6 +1478,595 @@ body.modo-mobile-forcado .mobile-nav-item.ativo {
   display: none;
 }
 
+/* ==========================================================================
+   TERMINAL DE CHECK-IN RÁPIDO DE SINAIS VITAIS
+   ========================================================================== */
+
+.tela-checkin {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 10;
+  padding-bottom: 60px;
+}
+
+.topbar-checkin {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 28px;
+  background: var(--painel);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--painel-borda);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.topbar-checkin .logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar-checkin .logo img {
+  height: 38px;
+  filter: drop-shadow(0 0 10px rgba(0, 243, 255, 0.4));
+}
+
+.topbar-checkin .logo p {
+  font-family: var(--font-cyber);
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  color: var(--acento);
+  margin: 0;
+  font-weight: 700;
+}
+
+.relogio-live {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 243, 255, 0.08);
+  border: 1px solid var(--acento);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-family: var(--font-cyber);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--acento);
+  letter-spacing: 1.5px;
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+}
+
+.topbar-checkin-acoes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-checkin-painel {
+  background: linear-gradient(135deg, rgba(0, 243, 255, 0.15), rgba(157, 78, 221, 0.25));
+  border: 1px solid var(--acento);
+  color: var(--acento);
+  font-family: var(--font-hud);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-checkin-painel:hover {
+  background: var(--acento);
+  color: #000;
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-quick-checkin-topbar {
+  background: linear-gradient(135deg, rgba(0, 243, 255, 0.15), rgba(157, 78, 221, 0.25));
+  border: 1px solid var(--acento);
+  color: var(--acento);
+  font-family: var(--font-cyber);
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 6px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 0 12px rgba(0, 243, 255, 0.2);
+  transition: all 0.2s ease;
+}
+
+.btn-quick-checkin-topbar:hover {
+  background: linear-gradient(135deg, var(--acento), var(--cyber-violet));
+  color: #000;
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.checkin-container {
+  max-width: 820px;
+  width: 100%;
+  margin: 36px auto 0;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.checkin-card {
+  background: var(--painel);
+  border: 1px solid var(--painel-borda);
+  border-radius: 20px;
+  padding: 32px;
+  backdrop-filter: blur(24px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 243, 255, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.checkin-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--acento), var(--cyber-magenta), var(--cyber-green));
+}
+
+.checkin-cabecalho {
+  margin-bottom: 24px;
+}
+
+.badge-tag {
+  display: inline-block;
+  background: rgba(0, 243, 255, 0.1);
+  border: 1px solid var(--acento);
+  color: var(--acento);
+  font-family: var(--font-cyber);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 8px;
+}
+
+.checkin-cabecalho h2 {
+  font-family: var(--font-cyber);
+  font-size: 1.7rem;
+  letter-spacing: 1px;
+  color: var(--texto);
+  margin: 0 0 6px 0;
+}
+
+.checkin-cabecalho p {
+  color: var(--texto-suave);
+  font-size: 0.92rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Sugestão por Horário */
+.sugestao-horario-box {
+  background: rgba(0, 243, 255, 0.05);
+  border: 1px dashed var(--acento);
+  border-radius: 14px;
+  padding: 12px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sugestao-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.sugestao-rotulo {
+  color: var(--texto-suave);
+}
+
+.sugestao-info strong {
+  color: var(--acento);
+  font-size: 1.05rem;
+}
+
+.sugestao-horario-tag {
+  background: var(--cyber-green);
+  color: #000;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.btn-usar-sugestao {
+  background: var(--acento);
+  color: #000;
+  border: none;
+  font-family: var(--font-hud);
+  font-weight: 800;
+  font-size: 0.78rem;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-usar-sugestao:hover {
+  box-shadow: 0 0 12px var(--acento);
+  transform: scale(1.05);
+}
+
+/* Chips de Atalhos de Pacientes */
+.atalhos-pacientes-hoje {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.chip-paciente-checkin {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(18, 25, 38, 0.8);
+  border: 1px solid var(--painel-borda);
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.chip-paciente-checkin:hover {
+  border-color: var(--acento);
+  background: rgba(0, 243, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+.chip-paciente-checkin .chip-hora {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--cyber-green);
+}
+
+.chip-paciente-checkin .chip-nome {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--texto);
+}
+
+/* Formulário de Sinais Vitais */
+.grid-sinais-vitais {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.campo-vital {
+  background: rgba(18, 25, 38, 0.6);
+  border: 1.5px solid var(--painel-borda);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+}
+
+.campo-vital:focus-within {
+  border-color: var(--acento);
+  box-shadow: 0 0 18px rgba(0, 243, 255, 0.35);
+  background: rgba(0, 243, 255, 0.05);
+  transform: translateY(-2px);
+}
+
+.campo-vital label {
+  font-family: var(--font-cyber);
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--acento);
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.campo-vital label small {
+  color: var(--texto-suave);
+  font-size: 0.7rem;
+  font-weight: 400;
+}
+
+.campo-vital input {
+  background: transparent;
+  border: none;
+  font-family: var(--font-cyber);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--texto);
+  text-align: center;
+  outline: none;
+  padding: 4px 0;
+}
+
+.campo-vital input::placeholder {
+  color: rgba(255, 255, 255, 0.15);
+}
+
+.campo-vital .dica-campo {
+  font-size: 0.72rem;
+  color: var(--texto-suave);
+  text-align: center;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Campo Paciente */
+.campo-paciente-checkin {
+  margin-bottom: 24px;
+}
+
+.campo-paciente-checkin label {
+  display: block;
+  font-family: var(--font-hud);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--texto);
+  margin-bottom: 8px;
+}
+
+.campo-paciente-checkin label small {
+  color: var(--texto-suave);
+  font-weight: 400;
+}
+
+.input-com-autocomplete {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-com-autocomplete input {
+  width: 100%;
+  background: rgba(18, 25, 38, 0.8);
+  border: 1.5px solid var(--painel-borda);
+  border-radius: 12px;
+  padding: 14px 44px 14px 16px;
+  font-size: 1rem;
+  color: #fff;
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.input-com-autocomplete input:focus {
+  border-color: var(--acento);
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+}
+
+.btn-limpar-paciente {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--texto-suave);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.btn-limpar-paciente:hover {
+  color: var(--perigo);
+}
+
+.match-paciente-indicador {
+  margin-top: 8px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.match-paciente-indicador.sucesso {
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid var(--cyber-green);
+  color: var(--cyber-green);
+}
+
+.match-paciente-indicador.sucesso strong {
+  color: #fff;
+}
+
+.match-paciente-indicador.vazio {
+  background: rgba(255, 0, 127, 0.1);
+  border: 1px solid var(--perigo);
+  color: var(--perigo);
+}
+
+.match-motivo {
+  font-size: 0.72rem;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+/* Botão de Envio do Check-in */
+.btn-enviar-checkin {
+  width: 100%;
+  background: linear-gradient(135deg, var(--acento), var(--cyber-violet));
+  border: none;
+  color: #000;
+  font-family: var(--font-cyber);
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 25px rgba(0, 243, 255, 0.35);
+}
+
+.btn-enviar-checkin:hover {
+  box-shadow: 0 8px 35px rgba(0, 243, 255, 0.6);
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+/* Feedback de Sucesso */
+.feedback-checkin {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 12px;
+  animation: fadeIn 0.3s ease;
+}
+
+.feedback-checkin.pressao-normal {
+  background: rgba(0, 255, 136, 0.12);
+  border: 1.5px solid var(--cyber-green);
+  color: var(--cyber-green);
+}
+
+.feedback-checkin.pressao-atencao {
+  background: rgba(255, 183, 3, 0.12);
+  border: 1.5px solid #ffb703;
+  color: #ffb703;
+}
+
+.feedback-checkin.pressao-risco {
+  background: rgba(255, 0, 127, 0.12);
+  border: 1.5px solid var(--perigo);
+  color: var(--perigo);
+}
+
+/* Histórico de Check-ins Recentes */
+.historico-checkin-card {
+  background: var(--painel);
+  border: 1px solid var(--painel-borda);
+  border-radius: 16px;
+  padding: 20px 24px;
+  backdrop-filter: blur(16px);
+}
+
+.historico-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.historico-header h3 {
+  font-family: var(--font-cyber);
+  font-size: 1.05rem;
+  letter-spacing: 0.5px;
+  color: var(--texto);
+  margin: 0;
+}
+
+.feed-checkins {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.feed-item-checkin {
+  background: rgba(18, 25, 38, 0.6);
+  border: 1px solid var(--painel-borda);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.feed-item-checkin:hover {
+  background: rgba(18, 25, 38, 0.9);
+  border-color: var(--acento);
+}
+
+.feed-item-paciente strong {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--texto);
+}
+
+.feed-item-paciente small {
+  color: var(--texto-suave);
+  font-size: 0.78rem;
+}
+
+.feed-item-dados {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.feed-pa {
+  font-family: var(--font-cyber);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--acento);
+}
+
+.feed-pulso {
+  font-size: 0.82rem;
+  color: var(--cyber-green);
+  font-weight: 700;
+}
+
+.feed-hora {
+  font-size: 0.78rem;
+  color: var(--texto-suave);
+}
+
+/* Responsividade Mobile para Check-in */
+@media (max-width: 640px) {
+  .checkin-card {
+    padding: 20px 16px;
+  }
+  .grid-sinais-vitais {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .campo-vital input {
+    font-size: 1.8rem;
+  }
+  .topbar-checkin {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
+
 /* Print CSS Rules */
 @media print {
   body, html {

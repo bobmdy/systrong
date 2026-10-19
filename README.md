@@ -22,6 +22,13 @@
   - Tipografia de alta precisão usando as fontes Google **Orbitron**, **Rajdhani** e **Outfit**.
   - Suporte completo a **Dark Mode** e **Light Mode** com alternância instantânea.
 
+- **⚡ Terminal Rápido de Sinais Vitais (Check-in Pós-Login)**:
+  - Tela inicial rápida imediata após o login para registro instantâneo de sinais vitais.
+  - **4 Campos Essenciais**: `SYS (mmHg)`, `DIA (mmHg)`, `PULSE (BPM)` e `PACIENTE`.
+  - **Identificação Inteligente por Horário**: O sistema sugere e preenche automaticamente o paciente agendado para o horário mais próximo do relógio.
+  - **Identificação por Nome Reduzido / ID Curto**: Reconhece apelidos ou abreviações (ex: `Luis H` -> `Luis Henrique da Silva`).
+  - Gravação automática no prontuário e gráfico do aluno com classificação de segurança (Normal, Atenção, Risco).
+
 - **💪 Prescrição & Programas de Treino**:
   - Criação de programas personalizados por objetivos (Reabilitação, Fortalecimento/Hipertrofia, Emagrecimento/Metabólico).
   - Organização por divisões de treino (A/B/C), séries, repetições, intervalos e cargas.
