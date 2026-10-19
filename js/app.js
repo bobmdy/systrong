@@ -162,6 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
   carregarEstado();
   configurarEventos();
   renderizar();
+  inicializarSupabase();
 });
 
 // Salvar / Carregar localStorage
@@ -998,6 +999,7 @@ function salvarNovoAluno(e) {
   state.alunos.push(novoAluno);
   state.alunoSelecionadoId = novoAluno.id;
   salvarEstado();
+  salvarPacienteNoSupabase(novoAluno);
   fecharModal('modal-aluno');
   renderizar();
   e.target.reset();
@@ -1073,6 +1075,7 @@ function salvarEdicaoAluno(e) {
   aluno.condicaoSaude = condicaoSaude;
 
   salvarEstado();
+  salvarPacienteNoSupabase(aluno);
   fecharModal('modal-editar-aluno');
   renderizar();
 }
@@ -1083,6 +1086,7 @@ function excluirAluno(id) {
     state.alunos = state.alunos.filter(a => a.id !== id);
     state.alunoSelecionadoId = state.alunos.length > 0 ? state.alunos[0].id : null;
     salvarEstado();
+    excluirPacienteNoSupabase(id);
     renderizar();
   }
 }
@@ -1108,6 +1112,7 @@ function adicionarPressaoInline(e) {
   document.getElementById('input-pulso').value = '';
 
   salvarEstado();
+  salvarPacienteNoSupabase(aluno);
   renderizarFichaAluno();
 }
 
@@ -1118,6 +1123,7 @@ function excluirPressao(alunoId, index) {
 
   aluno.pressao.splice(index, 1);
   salvarEstado();
+  salvarPacienteNoSupabase(aluno);
   renderizarFichaAluno();
 }
 
@@ -1143,6 +1149,7 @@ function tornarProgramaAtual(alunoId, progId) {
   });
 
   salvarEstado();
+  salvarPacienteNoSupabase(aluno);
   renderizarFichaAluno();
 }
 
@@ -1159,6 +1166,7 @@ function excluirPrograma(alunoId, progId) {
   }
 
   salvarEstado();
+  salvarPacienteNoSupabase(aluno);
   renderizarFichaAluno();
 }
 
@@ -1349,6 +1357,7 @@ function salvarProgramaTreino(e) {
 
   aluno.programas.unshift(novoPrograma);
   salvarEstado();
+  salvarPacienteNoSupabase(aluno);
   fecharModal('modal-programa');
   renderizarFichaAluno();
 }
@@ -1386,6 +1395,7 @@ function importarBackupJSON(inputElement) {
           if (state.alunos.length > 0) state.alunoSelecionadoId = state.alunos[0].id;
           salvarEstado();
           renderizar();
+          migrarPacientesLocaisParaSupabase();
           alert('Backup restaurado com sucesso no SYSTRONG!');
         }
       } else {
@@ -1792,6 +1802,7 @@ function registrarSinaisVitaisRapido(e) {
   });
 
   salvarEstado();
+  salvarPacienteNoSupabase(aluno);
 
   // Exibir feedback animado
   const status = getStatusPressao(sys, dia);
@@ -1867,5 +1878,234 @@ function renderizarFeedCheckinsRecentes() {
       </div>
     `;
   }).join('');
+}
+
+/* ==========================================================================
+   SINCRONIZAÇÃO EM NUVEM VIA SUPABASE (TEMPO REAL & OFFLINE-FIRST)
+   ========================================================================== */
+
+const SUPABASE_CONFIG = {
+  url: 'https://knvvxxdqewksjsvfrnxp.supabase.co',
+  anonKey: 'sb_publishable_Bqydotw-ggiYALe7rbeB6A_R4qWewXZ',
+  tabela: 'pacientes'
+};
+
+let supabaseClient = null;
+let supabaseConectado = false;
+
+// Inicializa o cliente do Supabase
+function inicializarSupabase() {
+  if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+    try {
+      supabaseClient = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+      conectarESincronizarSupabase();
+    } catch (err) {
+      console.warn('Erro ao inicializar cliente Supabase:', err);
+      atualizarBadgeNuvem('offline');
+    }
+  } else {
+    console.warn('Supabase SDK não carregado. Operando via localStorage.');
+    atualizarBadgeNuvem('offline');
+  }
+}
+
+// Atualiza o indicador visual da nuvem na interface
+function atualizarBadgeNuvem(status, textoCustom = null) {
+  const badges = document.querySelectorAll('.badge-nuvem');
+  badges.forEach(b => {
+    b.className = 'badge-nuvem';
+    if (status === 'conectado') {
+      b.classList.add('conectado');
+      b.innerHTML = `🟢 ${textoCustom || 'Nuvem Conectada'}`;
+      b.title = 'Conectado e sincronizado com o Supabase em tempo real.';
+    } else if (status === 'sincronizando') {
+      b.classList.add('sincronizando');
+      b.innerHTML = `🟡 ${textoCustom || 'Sincronizando...'}`;
+    } else if (status === 'pendente_tabela') {
+      b.classList.add('sincronizando');
+      b.innerHTML = `⚠️ ${textoCustom || 'Criar Tabela no Supabase'}`;
+      b.title = 'A tabela pacientes ainda precisa ser criada no Supabase SQL Editor.';
+    } else {
+      b.classList.add('erro');
+      b.innerHTML = `⚪ ${textoCustom || 'Modo Local'}`;
+      b.title = 'Operando localmente. Verifique sua conexão ou configuração.';
+    }
+  });
+}
+
+// Converte modelo do sistema para colunas do Supabase
+function converterAlunoParaSupabase(aluno) {
+  return {
+    id: String(aluno.id),
+    nome: aluno.nome,
+    nome_curto: aluno.nomeCurto || null,
+    horario: aluno.horario || null,
+    idade: aluno.idade ? parseInt(aluno.idade, 10) : null,
+    objetivo: aluno.objetivo || 'FORT',
+    frequencia: aluno.frequencia || [],
+    condicao_saude: aluno.condicaoSaude || null,
+    arquivos: aluno.arquivos || [],
+    pressao: aluno.pressao || [],
+    programas: aluno.programas || [],
+    artigos: aluno.artigos || [],
+    updated_at: new Date().toISOString()
+  };
+}
+
+// Converte registro do Supabase de volta para o modelo do SYSTRONG
+function converterSupabaseParaAluno(row) {
+  return {
+    id: row.id,
+    nome: row.nome,
+    nomeCurto: row.nome_curto || row.nome.split(' ')[0],
+    horario: row.horario || '14:00',
+    idade: row.idade || 30,
+    objetivo: row.objetivo || 'FORT',
+    frequencia: Array.isArray(row.frequencia) ? row.frequencia : ['Seg', 'Qua', 'Sex'],
+    condicaoSaude: row.condicao_saude || '',
+    arquivos: Array.isArray(row.arquivos) ? row.arquivos : [],
+    pressao: Array.isArray(row.pressao) ? row.pressao : [],
+    programas: Array.isArray(row.programas) ? row.programas : [],
+    artigos: Array.isArray(row.artigos) ? row.artigos : []
+  };
+}
+
+// Conecta e busca os dados na nuvem
+async function conectarESincronizarSupabase() {
+  if (!supabaseClient) return;
+
+  atualizarBadgeNuvem('sincronizando', 'Buscando da nuvem...');
+
+  try {
+    const { data, error } = await supabaseClient
+      .from(SUPABASE_CONFIG.tabela)
+      .select('*')
+      .order('nome', { ascending: true });
+
+    if (error) {
+      if (error.code === 'PGRST205' || (error.message && error.message.includes('schema cache'))) {
+        console.warn('Tabela pacientes ainda não criada no Supabase.');
+        atualizarBadgeNuvem('pendente_tabela', 'Criar Tabela no Supabase');
+      } else {
+        console.warn('Erro ao consultar Supabase:', error.message);
+        atualizarBadgeNuvem('erro', 'Erro de Nuvem');
+      }
+      return;
+    }
+
+    supabaseConectado = true;
+
+    if (data && data.length > 0) {
+      // Se a nuvem tem pacientes, atualiza o estado local e localStorage
+      state.alunos = data.map(converterSupabaseParaAluno);
+      if (!state.alunoSelecionadoId || !state.alunos.some(a => a.id === state.alunoSelecionadoId)) {
+        state.alunoSelecionadoId = state.alunos[0].id;
+      }
+      salvarEstado();
+      renderizar();
+      atualizarBadgeNuvem('conectado', `${data.length} Paciente(s) Sincronizados`);
+    } else {
+      // Se a nuvem está vazia, mas o usuário já tinha cadastrado pacientes no computador,
+      // MIGRA automaticamente os pacientes locais para a nuvem!
+      if (state.alunos && state.alunos.length > 0) {
+        migrarPacientesLocaisParaSupabase();
+      } else {
+        atualizarBadgeNuvem('conectado', 'Nuvem Conectada');
+      }
+    }
+
+    // Ativa escuta em tempo real (Realtime)
+    ativarRealtimeSupabase();
+
+  } catch (err) {
+    console.warn('Falha na conexão com Supabase:', err);
+    atualizarBadgeNuvem('erro', 'Falha de Conexão');
+  }
+}
+
+// Envia todos os pacientes do computador para a nuvem na primeira vez
+async function migrarPacientesLocaisParaSupabase() {
+  if (!supabaseClient || !state.alunos || state.alunos.length === 0) return;
+
+  atualizarBadgeNuvem('sincronizando', `Subindo ${state.alunos.length} pacientes...`);
+
+  try {
+    const rows = state.alunos.map(converterAlunoParaSupabase);
+    const { error } = await supabaseClient
+      .from(SUPABASE_CONFIG.tabela)
+      .upsert(rows);
+
+    if (error) {
+      console.warn('Erro na migração inicial para o Supabase:', error);
+      atualizarBadgeNuvem('erro', 'Erro ao subir dados');
+    } else {
+      atualizarBadgeNuvem('conectado', `${state.alunos.length} Pacientes Salvos na Nuvem`);
+    }
+  } catch (err) {
+    console.warn('Erro ao subir pacientes:', err);
+  }
+}
+
+// Salva ou atualiza um paciente no Supabase
+async function salvarPacienteNoSupabase(aluno) {
+  if (!supabaseClient) return;
+  try {
+    const row = converterAlunoParaSupabase(aluno);
+    const { error } = await supabaseClient
+      .from(SUPABASE_CONFIG.tabela)
+      .upsert(row);
+
+    if (!error) {
+      atualizarBadgeNuvem('conectado', 'Sincronizado');
+    }
+  } catch (e) {
+    console.warn('Erro ao salvar no Supabase:', e);
+  }
+}
+
+// Remove paciente no Supabase
+async function excluirPacienteNoSupabase(alunoId) {
+  if (!supabaseClient) return;
+  try {
+    await supabaseClient
+      .from(SUPABASE_CONFIG.tabela)
+      .delete()
+      .eq('id', String(alunoId));
+    atualizarBadgeNuvem('conectado', 'Sincronizado');
+  } catch (e) {
+    console.warn('Erro ao excluir no Supabase:', e);
+  }
+}
+
+// Escuta alterações em tempo real (quando alguém altera pelo celular, atualiza o PC)
+function ativarRealtimeSupabase() {
+  if (!supabaseClient) return;
+
+  try {
+    supabaseClient
+      .channel('public:pacientes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: SUPABASE_CONFIG.tabela }, payload => {
+        if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+          const alunoAtualizado = converterSupabaseParaAluno(payload.new);
+          const idx = state.alunos.findIndex(a => a.id === alunoAtualizado.id);
+          if (idx >= 0) {
+            state.alunos[idx] = alunoAtualizado;
+          } else {
+            state.alunos.push(alunoAtualizado);
+          }
+          salvarEstado();
+          renderizar();
+          atualizarBadgeNuvem('conectado', 'Atualizado via Nuvem');
+        } else if (payload.eventType === 'DELETE') {
+          state.alunos = state.alunos.filter(a => a.id !== String(payload.old.id));
+          salvarEstado();
+          renderizar();
+          atualizarBadgeNuvem('conectado', 'Atualizado via Nuvem');
+        }
+      })
+      .subscribe();
+  } catch (err) {
+    console.warn('Erro ao assinar Realtime do Supabase:', err);
+  }
 }
 

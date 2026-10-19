@@ -1546,6 +1546,44 @@ body.modo-mobile-forcado .mobile-nav-item.ativo {
   gap: 10px;
 }
 
+/* Badge de Sincronização em Nuvem (Supabase) */
+.badge-nuvem {
+  font-size: 0.76rem;
+  font-family: var(--font-hud);
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 243, 255, 0.08);
+  border: 1px solid var(--painel-borda);
+  color: var(--texto-suave);
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.badge-nuvem.conectado {
+  background: rgba(0, 255, 136, 0.12);
+  border-color: var(--cyber-green);
+  color: var(--cyber-green);
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.25);
+}
+
+.badge-nuvem.sincronizando {
+  background: rgba(255, 183, 3, 0.12);
+  border-color: #ffb703;
+  color: #ffb703;
+  animation: pulseNeon 1.5s infinite;
+}
+
+.badge-nuvem.erro {
+  background: rgba(255, 0, 127, 0.12);
+  border-color: var(--perigo);
+  color: var(--perigo);
+}
+
 .btn-checkin-painel {
   background: linear-gradient(135deg, rgba(0, 243, 255, 0.15), rgba(157, 78, 221, 0.25));
   border: 1px solid var(--acento);
